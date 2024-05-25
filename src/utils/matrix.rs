@@ -1,3 +1,5 @@
+use std::ops::Range;
+
 /// Matrix implementation
 /// 
 /// A mathematical data structure used.
@@ -34,6 +36,16 @@ impl Matrix {
     pub fn get_mut(&mut self, row: usize, col: usize) -> Option<&mut f64>{
         unimplemented!()
     }
+
+    /// Get a sub mutable matrix of the given matrix 
+    /// 
+    /// Returns None if the given rage did not fit the dimensions of the Matrix 
+    pub fn get_sub_matrix(self, rows:Range<usize>, cols:Range<usize>) ->Option<Matrix>{
+        //TODO: Get mutable vs reference to this matrix (?) 
+        unimplemented!()
+    }
+
+    
 }
 
 #[cfg(test)]

@@ -1,0 +1,20 @@
+name: Publish (Dry Run)
+
+on:
+    push:
+      branches: [ "main" ]
+    pull_request:
+      branches: [ "main" ]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      CARGO_TERM_COLOR: always
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: cargo build --release
+      - run: cargo publish --token ${CRATES_TOKEN} --dry-run --allow-dirty
+        env:
+          CRATES_TOKEN: ${{ secrets.CRATES_TOKEN }}

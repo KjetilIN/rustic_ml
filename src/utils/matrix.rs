@@ -1,3 +1,8 @@
+/// Matrix implementation
+/// 
+/// A mathematical data structure used.
+/// Read more about Matrixes here: 
+/// https://en.wikipedia.org/wiki/Matrix_(mathematics)
 pub struct Matrix{
     pub data: Vec<Vec<f64>>,
     pub rows: usize, 
@@ -5,6 +10,11 @@ pub struct Matrix{
 }
 
 impl Matrix {
+    /// Create a new empty matrix
+    /// 
+    /// Uses rows and cols for defining the size of the matrix.
+    /// All values within the matrix is 0.0.
+    /// Returns an instance of Matrix 
     pub fn new(rows: usize, cols: usize) -> Self{
         let data = vec![vec![0.0; cols]; rows];
         Matrix { data, rows, cols }
@@ -14,6 +24,15 @@ impl Matrix {
         let rows = data.len();
         let cols = data[0].len();
         Matrix { data, rows, cols }
+    }
+ 
+    pub fn get(&self, row: usize, col: usize) -> Option<&f64>{
+        unimplemented!()
+    }
+
+    // Mutable Reference 
+    pub fn get_mut(&mut self, row: usize, col: usize) -> Option<&mut f64>{
+        unimplemented!()
     }
 }
 

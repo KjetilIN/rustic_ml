@@ -22,6 +22,11 @@ impl Matrix {
         Matrix { data, rows, cols }
     }
 
+    /// Create a identity matrix from the given rows and columns
+    /// 
+    pub fn identity(row: usize, cols: usize)-> Self{
+        unimplemented!()
+    }
     /// Create a new matrix based on given data
     /// 
     /// Given the amount of rows and columns and the vector of data, it creates a new instance of the matrix.
@@ -164,30 +169,29 @@ impl Matrix {
         Some(result)
     }
 
+
+    pub fn get_diagonal(){
+        unimplemented!()
+    }
+
+    pub fn get_diagonal_as_slice(){
+        unimplemented!()
+    }
+
+    pub fn get_cross_diagonal(){
+        unimplemented!()
+    }
+
+    pub fn get_cross_diagonal_as_slice(){
+        unimplemented!()
+    }
+
     /// Get the shape of the Matrix.
     /// 
     /// Format of the string is "ROWSxCOLUMNS". Created with the format macro. 
     pub fn shape(&self) -> String{
         format!("{}x{}", self.rows, self.cols)
     }
-
-    /// Get a sub mutable matrix of the given matrix 
-    /// 
-    /// Returns None if the given rage did not fit the dimensions of the Matrix 
-    pub fn submatrix(self, rows:Range<usize>, cols:Range<usize>) -> Option<Matrix>{
-        //TODO: Get mutable vs reference to this matrix (?) 
-        unimplemented!()
-    }
-
-    pub fn submatrix_as_slice(self, rows:Range<usize>, cols:Range<usize>) -> Option<Matrix>{
-        //TODO: Is this something that we want (?) 
-        unimplemented!()
-    }
-
-    pub fn dot_product(self, mat: &Matrix) -> Option<f32>{
-        unimplemented!()
-    }
-
 
     pub fn sub_f(mut self, numb: f32){
         for item in self.data.iter_mut(){
@@ -209,13 +213,13 @@ impl Matrix {
         unimplemented!()
     }
 
-    pub fn mul_f(mut self, numb: f32){
+    pub fn scale_f(mut self, numb: f32){
         for item in self.data.iter_mut(){
             *item *= numb;
         };
     }
 
-    pub fn mul_m(mut self, mat: &Matrix){
+    pub fn scale_m(mut self, mat: &Matrix){
         unimplemented!()
     }
 
@@ -236,6 +240,55 @@ impl Matrix {
     }
 
     pub fn mod_m(mut self, mat: &Matrix){
+        unimplemented!()
+    }
+
+    pub fn is_orthogonal(&self) -> bool{
+        unimplemented!()
+    }
+
+    pub fn det_2x2(){
+        unimplemented!()
+    }
+
+    pub fn det_3x3(){
+
+    }
+
+    /// Get a sub mutable matrix of the given matrix 
+    /// 
+    /// Returns None if the given rage did not fit the dimensions of the Matrix 
+    pub fn submatrix(self, rows:Range<usize>, cols:Range<usize>) -> Option<Matrix>{
+        //TODO: Get mutable vs reference to this matrix (?) 
+        unimplemented!()
+    }
+
+    pub fn submatrix_as_slice(self, rows:Range<usize>, cols:Range<usize>) -> Option<Matrix>{
+        //TODO: Is this something that we want (?) 
+        unimplemented!()
+    }
+
+    pub fn product(mut self, mat: &Matrix){
+        unimplemented!()
+    }
+
+    pub fn dot_product(self, mat: &Matrix) -> Option<f32>{
+        unimplemented!()
+    }
+    
+    pub fn transpose(mut self){
+        unimplemented!()
+    }
+
+    pub fn get_transposed(&self) -> Matrix{
+        unimplemented!()
+    }
+
+    pub fn inverse(mut self){
+        unimplemented!()
+    }
+
+    pub fn get_inverse(&self)-> Matrix{
         unimplemented!()
     }
     

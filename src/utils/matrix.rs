@@ -54,7 +54,7 @@ impl Matrix {
         return Some(&self.data[index]);
     }
 
-    /// Get an item from the Matrix 
+    /// Get an item from the Matrix (as mutable reference)
     /// 
     /// Given the row and column of the item, retrieve a mutable reference to the item.
     /// If there is not item, or if the row anc column given was to high, it returns None. 
@@ -108,6 +108,10 @@ impl Matrix {
         Some(&self.data[start_index..end_index])
     }
 
+    /// Get a single col from the Matrix
+    /// 
+    /// Takes the index of the col, and returns a vector of all the values in the given col index.
+    /// Returns None if the index is out of range. 
     pub fn get_col(&self, index:usize) -> Option<Vec<f32>>{
         if index >= self.cols{
             return None;
@@ -121,10 +125,32 @@ impl Matrix {
         Some(result)
     }
 
-    pub fn get_col_mut(&mut self, index:usize) -> Option<&mut [f32]>{
-        unimplemented!()
+    /// Get a single col from the Matrix (as a mutable reference)
+    /// 
+    /// Takes the index of the col, and returns a vector of all the values in the given col index.
+    /// This code uses `unsafe`, and is therefor not recommended. Use `get_mut` if possible. 
+    /// Returns None if the index is out of range.
+    pub fn get_col_mut(&mut self, index:usize) -> Option<Vec<&mut f32>>{
+        if index >= self.cols{
+            return None;
+        }
+
+        let mut result:Vec<&mut f32> = Vec::with_capacity(self.cols);
+        let data_ptr = self.data.as_mut_ptr();
+        for i in 0..self.rows {
+            unsafe {
+                let elem = &mut *data_ptr.add(i * self.cols + index);
+                result.push(elem);
+            }
+        }
+
+        Some(result)
     }
 
+    /// Get a single row from the Matrix (as slice)
+    /// 
+    /// Takes the index of the row and returns a slice from the Matrix.
+    /// Returns None if the index is out of range. 
     pub fn get_col_as_slice(&self, index:usize) -> Option<Vec<&f32>>{
         if index >= self.cols{
             return None;
@@ -137,8 +163,6 @@ impl Matrix {
         
         Some(result)
     }
-
-
 
     /// Get a sub mutable matrix of the given matrix 
     /// 
@@ -424,13 +448,13 @@ mod tests {
             None => panic!("Expected row of index 0 to have values"),
         }
 
-        // First second
+        // Second row
         match matrix.get_row(1) {
             Some(values) => assert_eq!(values, second_row),
             None => panic!("Expected row of index 1 to have values"),
         }
 
-        // First row
+        // Third row
         match matrix.get_row(2) {
             Some(values) => assert_eq!(values, third_row),
             None => panic!("Expected row of index 2 to have values"),
@@ -537,7 +561,7 @@ mod tests {
         let mut matrix: Matrix = Matrix::from_vec(cols, data.clone());
 
         // Get a row that does not exist => row nr.4 does not exist 
-        match matrix.get_row_mut(4){
+        match matrix.get_row_mut(3){
             Some(values) => panic!("Expected no values in row 4, got: {:?}", values),
             None => (), //Success 
         }
@@ -598,10 +622,191 @@ mod tests {
         let matrix: Matrix = Matrix::from_vec(cols, data.clone());
 
         // Get a row that does not exist => row nr.4 does not exist 
-        match matrix.get_row_as_slice(4){
+        match matrix.get_row_as_slice(3){
             Some(values) => panic!("Expected no values in row 4, got: {:?}", values),
             None => (), //Success 
         }
     }
 
+
+    #[test]
+    fn test_get_col_matrix_positive(){
+        // Testing a 3x4 matrix 
+        let cols = 4; 
+
+        let data:Vec<f32> = vec![1.0,  2.0,  3.0,  4.0,
+                                 5.0,  6.0,  7.0,  8.0,
+                                 9.0, 10.0, 11.0, 12.0];
+
+        let matrix: Matrix = Matrix::from_vec(cols, data.clone());
+
+        let first_col: &[f32] = &vec![1.0, 5.0, 9.0];
+        let second_col: &[f32] = &vec![2.0, 6.0, 10.0];
+        let third_col: &[f32] = &vec![3.0, 7.0, 11.0]; 
+
+        // First col
+        match matrix.get_col(0) {
+            Some(values) => assert_eq!(values, first_col),
+            None => panic!("Expected col of index 0 to have values"),
+        }
+
+        // Second col
+        match matrix.get_col(1) {
+            Some(values) => assert_eq!(values, second_col),
+            None => panic!("Expected col of index 1 to have values"),
+        }
+
+        // Third col
+        match matrix.get_col(2) {
+            Some(values) => assert_eq!(values, third_col),
+            None => panic!("Expected col of index 2 to have values"),
+        }
+
+    }
+
+    #[test]
+    fn test_get_col_matrix_negative(){
+        // Testing a 3x4 matrix 
+        let cols = 4; 
+
+        let data:Vec<f32> = vec![1.0,  2.0,  3.0,  4.0,
+                                 5.0,  6.0,  7.0,  8.0,
+                                 9.0, 10.0, 11.0, 12.0];
+
+        let matrix: Matrix = Matrix::from_vec(cols, data.clone());
+
+        // Get a row that does not exist => row nr.4 does not exist 
+        match matrix.get_col(4){
+            Some(values) => panic!("Expected no values in row 4, got: {:?}", values),
+            None => (), //Success 
+        }
+    }
+
+    #[test]
+    fn test_get_col_mut_matrix_positive(){
+        // Testing a 3x4 matrix 
+        let cols = 4; 
+
+        let data:Vec<f32> = vec![1.0,  2.0,  3.0,  4.0,
+                                 5.0,  6.0,  7.0,  8.0,
+                                 9.0, 10.0, 11.0, 12.0];
+
+        let mut matrix: Matrix = Matrix::from_vec(cols, data.clone());
+
+        // Test first column
+        if let Some(mut col) = matrix.get_col_mut(0) {
+            assert_eq!(*col[0], 1.0);
+            assert_eq!(*col[1], 5.0);
+            assert_eq!(*col[2], 9.0);
+            *col[0] = 10.0;
+            *col[1] = 11.0;
+            *col[2] = 12.0;
+        } else {
+            panic!("Expected column 0 to have values");
+        }
+
+        // Test second column
+        if let Some(mut col) = matrix.get_col_mut(1) {
+            assert_eq!(*col[0], 2.0);
+            assert_eq!(*col[1], 6.0);
+            assert_eq!(*col[2], 10.0);
+            *col[0] = 20.0;
+            *col[1] = 21.0;
+            *col[2] = 22.0;
+        } else {
+            panic!("Expected column 1 to have values");
+        }
+
+        // Test third column
+        if let Some(mut col) = matrix.get_col_mut(2) {
+            assert_eq!(*col[0], 3.0);
+            assert_eq!(*col[1], 7.0);
+            assert_eq!(*col[2], 11.0);
+            *col[0] = 30.0;
+            *col[1] = 31.0;
+            *col[2] = 32.0;
+        } else {
+            panic!("Expected column 2 to have values");
+        }
+
+        // Verify the matrix after modification
+        assert_eq!(matrix.data, vec![
+            10.0, 20.0, 30.0, 4.0,
+            11.0, 21.0, 31.0, 8.0,
+            12.0, 22.0, 32.0, 12.0,
+        ]);
+
+
+    }
+
+    #[test]
+    fn test_get_col_mut_matrix_negative(){
+        // Testing a 3x4 matrix 
+        let cols = 4; 
+
+        let data:Vec<f32> = vec![1.0,  2.0,  3.0,  4.0,
+                                 5.0,  6.0,  7.0,  8.0,
+                                 9.0, 10.0, 11.0, 12.0];
+
+        let mut matrix: Matrix = Matrix::from_vec(cols, data.clone());
+
+        // Get a row that does not exist => row nr.4 does not exist 
+        match matrix.get_col_mut(4){
+            Some(values) => panic!("Expected no values in row 4, got: {:?}", values),
+            None => (), //Success 
+        }
+    }
+
+    #[test]
+    fn test_get_col_as_slice_matrix_positive(){
+        // Testing a 3x4 matrix 
+        let cols = 4; 
+
+        let data:Vec<f32> = vec![1.0,  2.0,  3.0,  4.0,
+                                 5.0,  6.0,  7.0,  8.0,
+                                 9.0, 10.0, 11.0, 12.0];
+
+        let matrix: Matrix = Matrix::from_vec(cols, data.clone());
+
+        let first_col: Vec<&f32> = vec![&1.0, &5.0, &9.0];
+        let second_col: Vec<&f32> = vec![&2.0, &6.0, &10.0];
+        let third_col: Vec<&f32> = vec![&3.0, &7.0, &11.0]; 
+
+        // First col
+        match matrix.get_col_as_slice(0) {
+            Some(values) => assert_eq!(values, first_col),
+            None => panic!("Expected col of index 0 to have values"),
+        }
+
+        // Second col
+        match matrix.get_col_as_slice(1) {
+            Some(values) => assert_eq!(values, second_col),
+            None => panic!("Expected col of index 1 to have values"),
+        }
+
+        // Third col
+        match matrix.get_col_as_slice(2) {
+            Some(values) => assert_eq!(values, third_col),
+            None => panic!("Expected col of index 2 to have values"),
+        }
+
+    }
+
+    #[test]
+    fn test_get_col_as_slice_matrix_negative(){
+        // Testing a 3x4 matrix 
+        let cols = 4; 
+
+        let data:Vec<f32> = vec![1.0,  2.0,  3.0,  4.0,
+                                 5.0,  6.0,  7.0,  8.0,
+                                 9.0, 10.0, 11.0, 12.0];
+
+        let matrix: Matrix = Matrix::from_vec(cols, data.clone());
+
+        // Get a row that does not exist => row nr.4 does not exist 
+        match matrix.get_col_as_slice(4){
+            Some(values) => panic!("Expected no values in row 4, got: {:?}", values),
+            None => (), //Success 
+        }
+    }
 }

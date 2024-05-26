@@ -174,17 +174,70 @@ impl Matrix {
     /// Get a sub mutable matrix of the given matrix 
     /// 
     /// Returns None if the given rage did not fit the dimensions of the Matrix 
-    pub fn get_submatrix(self, rows:Range<usize>, cols:Range<usize>) -> Option<Matrix>{
+    pub fn submatrix(self, rows:Range<usize>, cols:Range<usize>) -> Option<Matrix>{
         //TODO: Get mutable vs reference to this matrix (?) 
         unimplemented!()
     }
 
-    pub fn dot_product(self, m: Matrix) -> Option<f32>{
+    pub fn submatrix_as_slice(self, rows:Range<usize>, cols:Range<usize>) -> Option<Matrix>{
+        //TODO: Is this something that we want (?) 
+        unimplemented!()
+    }
+
+    pub fn dot_product(self, mat: &Matrix) -> Option<f32>{
         unimplemented!()
     }
 
 
+    pub fn sub_f(mut self, numb: f32){
+        for item in self.data.iter_mut(){
+            *item -= numb;
+        };
+    }
 
+    pub fn sub_m(mut self, mat: &Matrix){
+        unimplemented!()
+    }
+
+    pub fn add_f(mut self, numb: f32){
+        for item in self.data.iter_mut(){
+            *item += numb;
+        };
+    }
+
+    pub fn add_m(mut self, mat: &Matrix){
+        unimplemented!()
+    }
+
+    pub fn mul_f(mut self, numb: f32){
+        for item in self.data.iter_mut(){
+            *item *= numb;
+        };
+    }
+
+    pub fn mul_m(mut self, mat: &Matrix){
+        unimplemented!()
+    }
+
+    pub fn div_f(mut self, numb: f32){
+        for item in self.data.iter_mut(){
+            *item /= numb;
+        };
+    }
+
+    pub fn div_m(mut self, mat: &Matrix){
+        unimplemented!()
+    }
+
+    pub fn mod_f(mut self, numb: f32){
+        for item in self.data.iter_mut(){
+            *item %= numb;
+        };
+    }
+
+    pub fn mod_m(mut self, mat: &Matrix){
+        unimplemented!()
+    }
     
 }
 

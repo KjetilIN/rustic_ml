@@ -164,10 +164,17 @@ impl Matrix {
         Some(result)
     }
 
+    /// Get the shape of the Matrix.
+    /// 
+    /// Format of the string is "ROWSxCOLUMNS". Created with the format macro. 
+    pub fn shape(&self) -> String{
+        format!("{}x{}", self.rows, self.cols)
+    }
+
     /// Get a sub mutable matrix of the given matrix 
     /// 
     /// Returns None if the given rage did not fit the dimensions of the Matrix 
-    pub fn get_submatrix(self, rows:Range<usize>, cols:Range<usize>) ->Option<Matrix>{
+    pub fn get_submatrix(self, rows:Range<usize>, cols:Range<usize>) -> Option<Matrix>{
         //TODO: Get mutable vs reference to this matrix (?) 
         unimplemented!()
     }
@@ -176,9 +183,7 @@ impl Matrix {
         unimplemented!()
     }
 
-    pub fn shape(self) -> String{
-        format!("{}x{}", self.rows, self.cols)
-    }
+
 
     
 }
@@ -808,5 +813,19 @@ mod tests {
             Some(values) => panic!("Expected no values in row 4, got: {:?}", values),
             None => (), //Success 
         }
+    }
+
+    #[test]
+    fn test_shape_matrix(){
+        let matrix_one_dim: Matrix = Matrix::new(1, 1);
+        let matrix_two_dim: Matrix = Matrix::new(2, 2);
+        let matrix_three_dim: Matrix = Matrix::new(3, 3);
+        let matrix_odd: Matrix = Matrix::new(3, 5);
+
+
+        assert_eq!(matrix_one_dim.shape(), "1x1");
+        assert_eq!(matrix_two_dim.shape(), "2x2");
+        assert_eq!(matrix_three_dim.shape(), "3x3");
+        assert_eq!(matrix_odd.shape(), "3x5");
     }
 }

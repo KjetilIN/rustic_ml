@@ -40,18 +40,7 @@ jobs:
           toolchain: stable
           override: true
 
-      - name: Check if Crate.io version is already published
-        id: check_version
-        run: |
-          version=$(grep '^version =' Cargo.toml | sed 's/version = "\(.*\)"/\1/')
-          if cargo search $(basename $(pwd)) --limit 1 | grep -q "${version}"; then
-            echo "Version ${version} is already published"
-            echo "publish_needed=false" >> $GITHUB_ENV
-          else
-            echo "publish_needed=true" >> $GITHUB_ENV
-  
       - name: Publish to Crates.io
-        if: env.publish_needed == 'true'
         run: cargo publish --token ${CRATES_TOKEN}
         env:
           CRATES_TOKEN: ${{ secrets.CRATES_TOKEN }}

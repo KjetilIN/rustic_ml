@@ -46,7 +46,7 @@ jobs:
             git checkout -b bump-version-${{ env.version }}
             git add Cargo.toml
             git commit -m "Set version to ${{ env.version }}"
-            git push origin bump-version-${{ env.version }}
+            git push origin bump-version-${{ env.version }} --force
 
       - name: Create Pull Request
         if: success()

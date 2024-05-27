@@ -1,4 +1,4 @@
-use std::{fs::OpenOptions, ops::Range};
+use std::ops::Range;
 
 /// Matrix implementation
 /// 
@@ -264,6 +264,26 @@ impl Matrix {
         format!("{}x{}", self.rows, self.cols)
     }
 
+    /// Reshapes the matrix to the new shape based on the given new rows and columns
+    /// 
+    /// If the new matrix is bigger than the original, then the method adds default values: `0.0`.
+    /// If the new matrix is smaller than the original, then the method removes the extra data at the end of the matrix. 
+    pub fn reshape(&mut self, new_rows: usize, new_cols: usize){
+        let current_size = self.rows * self.cols;
+        let new_size = new_rows * new_cols;
+
+        // Remove or add data to the matrix depending on the size difference
+        if new_size > current_size {
+            self.data.resize(new_size, 0.0);
+        } else if new_size < current_size {
+            self.data.truncate(new_size);
+        }
+
+        // Update the dimensions
+        self.rows = new_rows;
+        self.cols = new_cols;
+    }
+
     pub fn sub_f(mut self, numb: f32){
         for item in self.data.iter_mut(){
             *item -= numb;
@@ -323,7 +343,7 @@ impl Matrix {
     }
 
     pub fn det_3x3(){
-
+        unimplemented!()
     }
 
     /// Get a sub mutable matrix of the given matrix 
@@ -1146,5 +1166,44 @@ mod tests {
         let matrix: Matrix = Matrix::from_vec(cols, data.clone());
 
         assert_eq!(matrix.get_cross_diagonal_as_slice(), None);
+    }
+
+    #[test]
+    fn test_reshape_matrix(){
+        let data:Vec<f32> = vec![1.0,2.0,3.0,4.0,
+                                 5.0,6.0,7.0,8.0,
+                                 9.0,10.0,11.0,12.0,
+                                 13.0,14.0,15.0,16.0];
+
+        // 4X4
+        let mut matrix_same_data_amount: Matrix = Matrix::from_vec(4, data.clone());
+
+        // 1X16
+        let mut matrix_add_data: Matrix = Matrix::from_vec(16, data.clone());
+
+
+        // 4x4
+        let mut matrix_remove_data: Matrix = Matrix::from_vec(4, data.clone());
+
+        // Test reshape with the same amount of data
+        matrix_same_data_amount.reshape(2, 8);
+        assert_eq!(matrix_same_data_amount.rows, 2);
+        assert_eq!(matrix_same_data_amount.cols, 8);
+        assert_eq!(matrix_same_data_amount.data.len(), 16);
+
+
+        // Test reshape and add data 
+        matrix_add_data.reshape(3, 8);
+        assert_eq!(matrix_add_data.rows, 3);
+        assert_eq!(matrix_add_data.cols, 8);
+        assert_eq!(matrix_add_data.data.len(), 24);
+
+        // Test reshape and remove data 
+        matrix_remove_data.reshape(2, 4);
+        assert_eq!(matrix_remove_data.rows, 2);
+        assert_eq!(matrix_remove_data.cols, 4);
+        assert_eq!(matrix_remove_data.data.len(), 8);
+
+
     }
 }

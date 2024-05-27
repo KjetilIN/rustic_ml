@@ -56,9 +56,6 @@ jobs:
             git add Cargo.toml
             git commit -m "Set version to ${{ env.version }}"
             git push origin bump-version-${{ env.version }}
-
-            - name: Install GitHub CLI
-            run: sudo apt-get install -y gh
     
       - name: Create Pull Request
         if: ${{ success() }}

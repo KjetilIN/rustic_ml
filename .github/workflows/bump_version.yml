@@ -1,7 +1,9 @@
 name: Bump Version
 
 on:
-  workflow_call:
+  push:
+    tags:
+      - 'v*'
 
 jobs:
   bump-version:
@@ -18,7 +20,6 @@ jobs:
       - name: Fetch all tags
         run: git fetch --tags
 
-    
       - name: Get latest tag
         id: get_latest_tag
         run: |

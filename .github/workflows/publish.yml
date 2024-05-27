@@ -1,30 +1,14 @@
 name: Publish and Create Release
 
 on:
-  push:
-    # Sequence of patterns matched against refs/tags
-    tags:
-      - 'v*' # Push events to matching v*
+  pull_request:
+    types: [closed]
 
 jobs:
-  # The following jobs should be good, since these are tested before pr
-  # But we run them again just in-case
-
-  lint:
-    uses: KjetilIN/rustic_ml/.github/workflows/lint.yml@main
-    secrets: inherit
-    
-  test:
-    uses: KjetilIN/rustic_ml/.github/workflows/test.yml@main
-    secrets: inherit
-
-  dry_pub: 
-    uses: KjetilIN/rustic_ml/.github/workflows/publish_dry.yml@main
-    secrets: inherit
-
   publish:
-    name: Publish
-    needs: [lint, test, dry_pub]
+    if: >
+      ${{ github.event.pull_request.merged == true && 
+          startsWith(github.event.pull_request.head.ref, 'bump-version-') }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
@@ -37,6 +21,10 @@ jobs:
           toolchain: stable
           override: true
 
+      - name: Get the latest tag
+        id: get_latest_tag
+        run: echo "latest_tag=$(git describe --tags `git rev-list --tags --max-count=1`)" >> $GITHUB_ENV
+
       - name: Publish to Crates.io
         run: cargo publish --token ${CRATES_TOKEN}
         env:
@@ -48,10 +36,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }}
+          tag_name: ${{ env.latest_tag }}
+          release_name: ${{ env.latest_tag }}
           body: |
-            Changes in this Release: 
+            Changes in this Release:
             - **Will be listed**
+
+            Please edit this release to add more details.
           draft: true
           prerelease: false

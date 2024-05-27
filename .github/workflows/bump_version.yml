@@ -33,10 +33,18 @@ jobs:
           version=$(echo "${{ env.latest_tag }}" | sed 's/^v//')
           echo "version=$version" >> $GITHUB_ENV
 
+      - name: Delete remote branch if exists
+        run: |
+          branch=bump-version-${{ env.version }}
+          if git ls-remote --exit-code --heads origin $branch; then
+            git push origin --delete $branch
+          fi
+
       - name: Update Cargo.toml version
         run: |
           VERSION=${{ env.version }}
           sed -i "s/^version = \".*\"/version = \"$VERSION\"/" Cargo.toml
+          cat Cargo.toml
 
       - name: Validate Cargo.toml
         run: cargo check
@@ -44,10 +52,10 @@ jobs:
       - name: Commit changes
         if: success()
         run: |
-            git checkout -b bump-version-${{ env.version }}
+            git switch -c bump-version-${{ env.version }}
             git add Cargo.toml
             git commit -m "Set version to ${{ env.version }}"
-            git push origin bump-version-${{ env.version }} --force
+            git push origin bump-version-${{ env.version }}
 
       - name: Create Pull Request
         if: success()

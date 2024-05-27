@@ -1,0 +1,62 @@
+name: Bump Version
+
+on:
+  workflow_call:
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+    name: Bump Version and Create PR
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Git
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+
+      - name: Fetch all tags
+        run: git fetch --tags
+
+    
+      - name: Get latest tag
+        id: get_latest_tag
+        run: |
+          latest_tag=$(git describe --tags `git rev-list --tags --max-count=1`)
+          echo "latest_tag=$latest_tag" >> $GITHUB_ENV
+
+      - name: Extract version from tag
+        id: extract_version
+        run: |
+          version=$(echo "${{ env.latest_tag }}" | sed 's/^v//')
+          echo "version=$version" >> $GITHUB_ENV
+
+      - name: Update Cargo.toml version
+        run: |
+          VERSION=${{ env.version }}
+          sed -i.bak "s/^version = \".*\"/version = \"$VERSION\"/" Cargo.toml
+
+      - name: Validate Cargo.toml
+        run: cargo check
+  
+      - name: Commit changes
+        if: success()
+        run: |
+            git checkout -b bump-version-${{ env.version }}
+            git add Cargo.toml
+            git commit -m "Set version to ${{ env.version }}"
+            git push origin bump-version-${{ env.version }}
+
+      - name: Create Pull Request
+        if: success()
+        id: create_pr
+        uses: peter-evans/create-pull-request@v5
+        with:
+            token: ${{ secrets.GITHUB_TOKEN }}
+            commit-message: "Bump version to ${{ env.version }}"
+            branch: bump-version-${{ env.version }}
+            title: "Bump version to ${{ env.version }}"
+            body: "This PR bumps the version in Cargo.toml to ${{ env.version }}."
+            labels: version-bump
+            reviewers: KjetilIN
+

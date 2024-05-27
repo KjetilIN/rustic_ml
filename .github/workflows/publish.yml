@@ -1,0 +1,57 @@
+name: Publish and Create Release
+
+on:
+  push:
+    # Sequence of patterns matched against refs/tags
+    tags:
+      - 'v*' # Push events to matching v*
+
+jobs:
+  # The following jobs should be good, since these are tested before pr
+  # But we run them again just in-case
+
+  lint:
+    uses: KjetilIN/rustic_ml/.github/workflows/lint.yml@main
+    secrets: inherit
+    
+  test:
+    uses: KjetilIN/rustic_ml/.github/workflows/test.yml@main
+    secrets: inherit
+
+  dry_pub: 
+    uses: KjetilIN/rustic_ml/.github/workflows/publish_dry.yml@main
+    secrets: inherit
+
+  publish:
+    name: Publish
+    needs: [lint, test, dry_pub]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+
+      - name: Install stable toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+
+      - name: Publish to Crates.io
+        run: cargo publish --token ${CRATES_TOKEN}
+        env:
+          CRATES_TOKEN: ${{ secrets.CRATES_TOKEN }}
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          body: |
+            Changes in this Release: 
+            - **Will be listed**
+          draft: true
+          prerelease: false

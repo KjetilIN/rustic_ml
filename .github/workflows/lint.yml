@@ -1,10 +1,11 @@
-name: Check Rust code
+name: Lint Rust Code
 
 on:
-    push:
-      branches: [ "main" ]
-    pull_request:
-      branches: [ "main" ]
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_call:
 
 env:
   CARGO_TERM_COLOR: always

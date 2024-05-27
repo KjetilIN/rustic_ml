@@ -19,7 +19,7 @@ jobs:
           git config --global user.name "github-actions[bot]"
 
       - name: Fetch all tags and branches
-        run: git fetch --tags --prune --prune-tags --prune=all
+        run: git fetch --tags --prune 
 
       - name: Get latest tag
         id: get_latest_tag

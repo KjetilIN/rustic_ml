@@ -3,6 +3,7 @@ name: Publish and Create Release
 on:
   pull_request:
     types: [closed]
+  workflow_dispatch:
 
 jobs:
   publish:
@@ -14,6 +15,24 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v2
 
+      - name: Set up Git
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+
+      - name: Fetch all tags
+        run: git fetch --tags
+
+      - name: Get the latest tag
+        id: get_latest_tag
+        run: |
+          latest_tag=$(git describe --tags `git rev-list --tags --max-count=1` 2>/dev/null || echo "")
+          if [ -z "$latest_tag" ]; then
+            echo "No tags found"
+            exit 1
+          fi
+          echo "latest_tag=$latest_tag" >> $GITHUB_ENV
+
       - name: Install stable toolchain
         uses: actions-rs/toolchain@v1
         with:
@@ -21,11 +40,18 @@ jobs:
           toolchain: stable
           override: true
 
-      - name: Get the latest tag
-        id: get_latest_tag
-        run: echo "latest_tag=$(git describe --tags `git rev-list --tags --max-count=1`)" >> $GITHUB_ENV
-
+      - name: Check if Crate.io version is already published
+        id: check_version
+        run: |
+          version=$(grep '^version =' Cargo.toml | sed 's/version = "\(.*\)"/\1/')
+          if cargo search $(basename $(pwd)) --limit 1 | grep -q "${version}"; then
+            echo "Version ${version} is already published"
+            echo "publish_needed=false" >> $GITHUB_ENV
+          else
+            echo "publish_needed=true" >> $GITHUB_ENV
+  
       - name: Publish to Crates.io
+        if: env.publish_needed == 'true'
         run: cargo publish --token ${CRATES_TOKEN}
         env:
           CRATES_TOKEN: ${{ secrets.CRATES_TOKEN }}
@@ -43,5 +69,5 @@ jobs:
             - **Will be listed**
 
             Please edit this release to add more details.
-          draft: true
-          prerelease: false
+          draft: false
+          prerelease: true

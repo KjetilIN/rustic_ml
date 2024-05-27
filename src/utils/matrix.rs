@@ -179,8 +179,22 @@ impl Matrix {
     }
 
 
-    pub fn get_diagonal(){
-        unimplemented!()
+    /// Get the numbers across the main diagonal if the `rows == cols`.
+    /// 
+    /// Returns a new vector of all the numbers across the diagonal
+    /// Returns none if the amount of rows is not equal to the amount of columns
+    pub fn get_diagonal(&self) -> Option<Vec<f32>>{
+        if self.rows != self.cols{
+            return None;
+        }
+
+        let mut diagonal: Vec<f32> = Vec::new();
+
+        for i in 0..self.rows{
+            diagonal.push(self.data[i*self.cols+i]); 
+        }
+
+        Some(diagonal)
     }
 
     pub fn get_diagonal_as_slice(){
@@ -965,5 +979,36 @@ mod tests {
         assert_eq!(matrix_two_dim.shape(), "2x2");
         assert_eq!(matrix_three_dim.shape(), "3x3");
         assert_eq!(matrix_odd.shape(), "3x5");
+    }
+
+
+    #[test]
+    fn test_get_diagonal_matrix_positive(){
+        // Testing a 2x4 matrix 
+        let cols = 4; 
+
+        let data:Vec<f32> = vec![1.0,2.0,3.0,4.0,
+                                 5.0,6.0,7.0,8.0,
+                                 9.0,10.0,11.0,12.0,
+                                 13.0,14.0,15.0,16.0];
+
+        let matrix: Matrix = Matrix::from_vec(cols, data.clone());
+
+        let diagonal_expected:Vec<f32> = vec![1.0, 6.0, 11.0, 16.0];
+
+        assert_eq!(matrix.get_diagonal(), Some(diagonal_expected));
+    }
+
+    #[test]
+    fn test_get_diagonal_matrix_negative(){
+        // Testing a 2x4 matrix 
+        let cols = 4; 
+
+        let data:Vec<f32> = vec![1.0,2.0,3.0,4.0,
+                                 5.0,6.0,7.0,8.0];
+
+        let matrix: Matrix = Matrix::from_vec(cols, data.clone());
+
+        assert_eq!(matrix.get_diagonal(), None);
     }
 }

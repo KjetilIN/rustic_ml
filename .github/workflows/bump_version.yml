@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
 
 jobs:
   bump-version:
@@ -17,8 +18,8 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
 
-      - name: Fetch all tags
-        run: git fetch --tags
+      - name: Fetch all tags and branches
+        run: git fetch --tags --prune --prune-tags --prune=all
 
       - name: Get latest tag
         id: get_latest_tag
@@ -35,7 +36,7 @@ jobs:
       - name: Update Cargo.toml version
         run: |
           VERSION=${{ env.version }}
-          sed -i.bak "s/^version = \".*\"/version = \"$VERSION\"/" Cargo.toml
+          sed -i "s/^version = \".*\"/version = \"$VERSION\"/" Cargo.toml
 
       - name: Validate Cargo.toml
         run: cargo check

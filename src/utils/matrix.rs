@@ -1,4 +1,4 @@
-use std::ops::Range;
+use std::{fmt::Display, ops::Range};
 
 /// Matrix implementation
 /// 
@@ -10,6 +10,34 @@ pub struct Matrix{
     pub rows: usize, 
     pub cols: usize
 }
+
+
+/// Custom Error type for a `Matrix` operation
+#[derive(Debug)]
+pub enum MatrixError {
+    /// An error that occurs when a operation requires that two matrices have the exact same shape
+    ShapeMismatch{
+        /// Shape of the matrix that called the matrix operation function.
+        first_matrix_shape: String,
+
+        /// Shape of the matrix that was given in a matrix operation function.
+        second_matrix_shape: String
+    },  
+}
+
+// For printing the error of the matrix
+impl Display for MatrixError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            MatrixError::ShapeMismatch { first_matrix_shape, second_matrix_shape } => {
+                write!(f, "The matrix with shape ({first_matrix_shape}) does not match the shape of the given matrix ({second_matrix_shape})")
+            },
+        }
+    }
+}
+
+// Making the MatrixError an Error
+impl std::error::Error for MatrixError {}
 
 impl Matrix {
     /// Create a new empty matrix
@@ -284,17 +312,17 @@ impl Matrix {
         self.cols = new_cols;
     }
 
-    pub fn sub_f(mut self, numb: f32){
+    pub fn sub_f(&mut self, numb: f32){
         for item in self.data.iter_mut(){
             *item -= numb;
         };
     }
 
-    pub fn sub_m(mut self, mat: &Matrix){
+    pub fn sub_m(&mut self, mat: &Matrix){
         unimplemented!()
     }
 
-    pub fn add_f(mut self, numb: f32){
+    pub fn add_f(&mut self, numb: f32){
         for item in self.data.iter_mut(){
             *item += numb;
         };
@@ -359,15 +387,15 @@ impl Matrix {
         unimplemented!()
     }
 
-    pub fn product(mut self, mat: &Matrix){
+    pub fn product(&mut self, mat: &Matrix){
         unimplemented!()
     }
 
-    pub fn dot_product(self, mat: &Matrix) -> Option<f32>{
+    pub fn dot_product(&self, mat: &Matrix) -> Option<f32>{
         unimplemented!()
     }
     
-    pub fn transpose(mut self){
+    pub fn transpose(&mut self){
         unimplemented!()
     }
 

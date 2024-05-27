@@ -1,4 +1,4 @@
-use std::ops::Range;
+use std::{fs::OpenOptions, ops::Range};
 
 /// Matrix implementation
 /// 
@@ -197,16 +197,64 @@ impl Matrix {
         Some(diagonal)
     }
 
-    pub fn get_diagonal_as_slice(){
-        unimplemented!()
+    /// Get the numbers across the main diagonal if the `rows == cols` (as slice)
+    /// 
+    /// Returns a new vector of all the numbers across the diagonal
+    /// Returns none if the amount of rows is not equal to the amount of columns
+    pub fn get_diagonal_as_slice(&self) -> Option<Vec<&f32>>{
+        if self.rows != self.cols{
+            return None;
+        }
+
+        let mut diagonal: Vec<&f32> = Vec::new();
+
+        for i in 0..self.rows{
+            diagonal.push(&self.data[i*self.cols+i]); 
+        }
+
+        Some(diagonal)
     }
 
-    pub fn get_cross_diagonal(){
-        unimplemented!()
+    /// Get the numbers across the cross diagonal if the `rows == cols`.
+    /// 
+    /// The cross diagonal is the diagonal from top right corner to the bottom left corner of the matrix. 
+    /// Not to be mistaken with the main diagonal. 
+    /// Returns a new vector of all the numbers across the diagonal
+    /// Returns none if the amount of rows is not equal to the amount of columns
+    pub fn get_cross_diagonal(&self) -> Option<Vec<f32>>{
+        if self.rows != self.cols{
+            return None;
+        }
+
+        let mut diagonal: Vec<f32> = Vec::new();
+
+        for i in 0..self.rows{
+            let col_index = self.cols - i - 1; 
+            diagonal.push(self.data[i*self.cols+col_index]); 
+        }
+
+        Some(diagonal)
     }
 
-    pub fn get_cross_diagonal_as_slice(){
-        unimplemented!()
+    /// Get the numbers across the cross diagonal if the `rows == cols` (as a slice)
+    /// 
+    /// The cross diagonal is the diagonal from top right corner to the bottom left corner of the matrix. 
+    /// Not to be mistaken with the main diagonal. 
+    /// Returns a new vector of all the numbers across the diagonal
+    /// Returns none if the amount of rows is not equal to the amount of columns
+    pub fn get_cross_diagonal_as_slice(&self) -> Option<Vec<&f32>>{
+        if self.rows != self.cols{
+            return None;
+        }
+
+        let mut diagonal: Vec<&f32> = Vec::new();
+
+        for i in 0..self.rows{
+            let col_index = self.cols - i - 1; 
+            diagonal.push(&self.data[i*self.cols+col_index]); 
+        }
+
+        Some(diagonal)
     }
 
     /// Get the shape of the Matrix.
@@ -984,7 +1032,7 @@ mod tests {
 
     #[test]
     fn test_get_diagonal_matrix_positive(){
-        // Testing a 2x4 matrix 
+        // Testing a 4x4 matrix 
         let cols = 4; 
 
         let data:Vec<f32> = vec![1.0,2.0,3.0,4.0,
@@ -1010,5 +1058,93 @@ mod tests {
         let matrix: Matrix = Matrix::from_vec(cols, data.clone());
 
         assert_eq!(matrix.get_diagonal(), None);
+    }
+
+    #[test]
+    fn test_get_diagonal_as_slice_matrix_positive(){
+        // Testing a 4x4 matrix 
+        let cols = 4; 
+
+        let data:Vec<f32> = vec![1.0,2.0,3.0,4.0,
+                                 5.0,6.0,7.0,8.0,
+                                 9.0,10.0,11.0,12.0,
+                                 13.0,14.0,15.0,16.0];
+
+        let matrix: Matrix = Matrix::from_vec(cols, data.clone());
+
+        let diagonal_expected:Vec<&f32> = vec![&1.0, &6.0, &11.0, &16.0];
+
+        assert_eq!(matrix.get_diagonal_as_slice(), Some(diagonal_expected));
+    }
+
+    #[test]
+    fn test_get_diagonal_as_slice_matrix_negative(){
+        // Testing a 2x4 matrix 
+        let cols = 4; 
+
+        let data:Vec<f32> = vec![1.0,2.0,3.0,4.0,
+                                 5.0,6.0,7.0,8.0];
+
+        let matrix: Matrix = Matrix::from_vec(cols, data.clone());
+
+        assert_eq!(matrix.get_diagonal_as_slice(), None);
+    }
+
+    #[test]
+    fn test_get_cross_diagonal_matrix_positive(){
+        // Testing a 4x4 matrix
+        let cols = 4; 
+        let data:Vec<f32> = vec![1.0,2.0,3.0,4.0,
+                                 5.0,6.0,7.0,8.0,
+                                 9.0,10.0,11.0,12.0,
+                                 13.0,14.0,15.0,16.0];
+
+        let matrix: Matrix = Matrix::from_vec(cols, data.clone());
+
+        let diagonal_expected:Vec<f32> = vec![4.0, 7.0, 10.0, 13.0];
+
+        assert_eq!(matrix.get_cross_diagonal(), Some(diagonal_expected));
+    }
+
+    #[test]
+    fn test_get_cross_diagonal_matrix_negative(){
+        // Testing a 2x4 matrix 
+        let cols = 4; 
+
+        let data:Vec<f32> = vec![1.0,2.0,3.0,4.0,
+                                 5.0,6.0,7.0,8.0];
+
+        let matrix: Matrix = Matrix::from_vec(cols, data.clone());
+
+        assert_eq!(matrix.get_cross_diagonal(), None);
+    }
+
+    #[test]
+    fn test_get_cross_diagonal_as_slice_matrix_positive(){
+        // Testing a 4x4 matrix
+        let cols = 4; 
+        let data:Vec<f32> = vec![1.0,2.0,3.0,4.0,
+                                 5.0,6.0,7.0,8.0,
+                                 9.0,10.0,11.0,12.0,
+                                 13.0,14.0,15.0,16.0];
+
+        let matrix: Matrix = Matrix::from_vec(cols, data.clone());
+
+        let diagonal_expected:Vec<&f32> = vec![&4.0, &7.0, &10.0, &13.0];
+
+        assert_eq!(matrix.get_cross_diagonal_as_slice(), Some(diagonal_expected));
+    }
+
+    #[test]
+    fn test_get_cross_diagonal_as_slice_matrix_negative(){
+        // Testing a 2x4 matrix 
+        let cols = 4; 
+
+        let data:Vec<f32> = vec![1.0,2.0,3.0,4.0,
+                                 5.0,6.0,7.0,8.0];
+
+        let matrix: Matrix = Matrix::from_vec(cols, data.clone());
+
+        assert_eq!(matrix.get_cross_diagonal_as_slice(), None);
     }
 }

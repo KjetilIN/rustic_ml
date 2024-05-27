@@ -55,6 +55,7 @@ jobs:
         with:
             token: ${{ secrets.GITHUB_TOKEN }}
             commit-message: "Bump version to ${{ env.version }}"
+            base: main
             branch: bump-version-${{ env.version }}
             title: "Bump version to ${{ env.version }}"
             body: "This PR bumps the version in Cargo.toml to ${{ env.version }}."

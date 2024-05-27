@@ -22,11 +22,20 @@ impl Matrix {
         Matrix { data, rows, cols }
     }
 
-    /// Create a identity matrix from the given rows and columns
+    /// Create a identity matrix from the given order 
     /// 
-    pub fn identity(row: usize, cols: usize)-> Self{
-        unimplemented!()
+    /// Creates an empty matrix from the given order. Sets the value 1.0 on the main diagonal of the matrix
+    /// Read more about Identity Matrix: <https://en.wikipedia.org/wiki/Identity_matrix>
+    pub fn identity(order: usize)-> Self{
+        let mut data = vec![0.0; order*order];
+
+        for i in 0..order{
+            data[i*order+i] = 1.0; 
+        }
+
+        Matrix{data, rows: order, cols: order}
     }
+
     /// Create a new matrix based on given data
     /// 
     /// Given the amount of rows and columns and the vector of data, it creates a new instance of the matrix.
@@ -311,7 +320,30 @@ mod tests {
         assert_eq!(matrix.data.len(), rows*cols);
         assert_eq!(matrix.cols, cols);
         assert_eq!(matrix.rows, rows);
-    }  
+    } 
+
+
+    #[test]
+    fn test_identity_matrix_constructor(){
+        // Creating amd testing a 3x3 Identity Matrix
+        let matrix3: Matrix = Matrix::identity(3);
+
+        let data_expected_3x3 = vec![1.0, 0.0, 0.0,
+                                           0.0, 1.0, 0.0,
+                                           0.0, 0.0, 1.0]; 
+
+        assert_eq!(matrix3.data, data_expected_3x3);
+
+        // Creating amd testing a 4x4 Identity Matrix
+        let matrix4: Matrix = Matrix::identity(4);
+
+        let data_expected_4x4 = vec![1.0, 0.0, 0.0, 0.0,
+                                               0.0, 1.0, 0.0, 0.0,
+                                               0.0, 0.0, 1.0, 0.0, 
+                                               0.0, 0.0, 0.0, 1.0]; 
+
+        assert_eq!(matrix4.data, data_expected_4x4);
+    }   
 
     #[test]
     fn test_new_matrix_constructor_from_vec(){

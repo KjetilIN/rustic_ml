@@ -24,7 +24,9 @@ pub enum MatrixError {
         second_matrix_shape: String
     },  
     /// Operation lead to division by 0
-    DivideByZero
+    DivideByZero,
+    /// Matrix operation required a range, but the given range lead to an error,
+    IllegalRange(String)
 }
 
 // For printing the error of the matrix
@@ -36,6 +38,9 @@ impl Display for MatrixError {
             },
             MatrixError::DivideByZero => {
                 write!(f, "Given matrix or number lead to division by zero")
+            },
+            MatrixError::IllegalRange(val) =>{
+                write!(f, "Illegal Range Given: {val}")
             }
         }
     }
@@ -319,31 +324,37 @@ impl Matrix {
 
     /// Get a sub mutable matrix of the given matrix 
     /// 
-    /// Returns None if the given rage did not fit the dimensions of the Matrix 
-    pub fn submatrix(&self, rows:Range<usize>, cols:Range<usize>) -> Option<Matrix>{
-        // Check if the ranges are valid:
+    /// Ranges start from 0 and are not inclusive of the end value.
+    /// Returns a `Result` with either the submatrix (`Matrix`) or the matrix error (`MatrixError`)
+    /// Error that can occur is when the ranges are bigger than the shape of the `Matrix`
+    pub fn submatrix(&self, rows:Range<usize>, cols:Range<usize>) -> Result<Matrix, MatrixError>{
+        // Check if the ranges fit the matrix 
+        if rows.end > self.rows || cols.end > self.cols{
+            return Err(MatrixError::IllegalRange(format!("Did not match the shape: {}", self.shape())));
+        }
+
+        // Check that the range is sequential and length at least 1 
+        if rows.start >= rows.end || cols.start >= cols.end{
+            return Err(MatrixError::IllegalRange("Range must start go from low to high value, and length at least 1".to_string()));
+        }
         
-        // Create new data
-        //let item_count = &rows.end * &cols.end;
-        //let mut data: Vec<f32> = Vec::with_capacity(item_count);
-        //for row in rows{
-        //    for col in cols{
-        //        data.push(self.data[row*self.rows + col].clone())
-//
-        //    }
-        //}
+        // Format the data for the submatrix
+        let mut data: Vec<f32> = Vec::with_capacity(rows.len()*cols.len());
+        for row in rows.clone(){
+            for col in cols.clone(){
+                data.push(self.data[row*self.rows + col].clone())
+            }
+        }
 
-        unimplemented!()
-
-        // Some(Matrix{
-        //     data,
-        //     rows: rows.end,
-        //     cols: cols.end
-        // })
+        Ok(Matrix{
+            data,
+            rows: rows.end - rows.start,
+            cols: cols.end - cols.start
+        })
     }
 
-    pub fn submatrix_as_slice(&self, rows:Range<usize>, cols:Range<usize>) -> Option<Matrix>{
-        //TODO: Is this something that we want (?) 
+    pub fn submatrix_as_slice(&self, rows:Range<usize>, cols:Range<usize>) -> Result<Matrix, MatrixError>{
+        //TODO: Ignoring for now, not use case clear 
         unimplemented!()
     }
 

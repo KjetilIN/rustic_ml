@@ -23,10 +23,16 @@ pub enum MatrixError {
         /// Shape of the matrix that was given in a matrix operation function.
         second_matrix_shape: String
     },  
+
     /// Operation lead to division by 0
     DivideByZero,
+
     /// Matrix operation required a range, but the given range lead to an error,
-    IllegalRange(String)
+    IllegalRange(String),
+
+    /// Matrix multiplication with two given matrixes sizes (mxn) and (qxp)
+    /// The columns (n) must equal rows (q) => n == q
+    MatrixMultiply,
 }
 
 // For printing the error of the matrix
@@ -41,6 +47,9 @@ impl Display for MatrixError {
             },
             MatrixError::IllegalRange(val) =>{
                 write!(f, "Illegal Range Given: {val}")
+            },
+            MatrixError::MatrixMultiply =>{
+                write!(f, "Illegal to multiply the two given matrixes.")
             }
         }
     }
@@ -358,13 +367,35 @@ impl Matrix {
         unimplemented!()
     }
 
-    pub fn product(&mut self, mat: &Matrix){
+    /// Multiply two matrices
+    /// 
+    /// Condition for multiplication of matrices: 
+    /// - Given matrix `(mxn)` and `(qxp)`
+    /// - Columns `n` must equal rows `q`
+    /// 
+    /// Returns `Result` based on if this condition is met 
+    pub fn multiply(&self, mat: &Matrix) -> Result<Matrix, MatrixError>{
+
+        if self.shape() != mat.shape(){
+            return Err(MatrixError::ShapeMismatch { 
+                first_matrix_shape: self.shape(), 
+                second_matrix_shape: mat.shape()}
+            );
+        }
+
+        // Create the new sum 
+        let mut matrix = Matrix::new(self.rows, self.cols);
+        
+        
+
+        Ok(matrix)        
+    }
+
+    pub fn cross_product(&mut self, mat: &Matrix) -> Result<Matrix, MatrixError>{
         unimplemented!()
     }
 
-    pub fn dot_product(&self, mat: &Matrix) -> Option<f32>{
-        unimplemented!()
-    }
+
     
     pub fn transpose(&mut self){
         unimplemented!()

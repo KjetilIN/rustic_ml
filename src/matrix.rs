@@ -23,6 +23,8 @@ pub enum MatrixError {
         /// Shape of the matrix that was given in a matrix operation function.
         second_matrix_shape: String
     },  
+    /// Operation lead to division by 0
+    DivideByZero
 }
 
 // For printing the error of the matrix
@@ -32,6 +34,9 @@ impl Display for MatrixError {
             MatrixError::ShapeMismatch { first_matrix_shape, second_matrix_shape } => {
                 write!(f, "The matrix with shape ({first_matrix_shape}) does not match the shape of the given matrix ({second_matrix_shape})")
             },
+            MatrixError::DivideByZero => {
+                write!(f, "Given matrix or number lead to division by zero")
+            }
         }
     }
 }
@@ -312,77 +317,32 @@ impl Matrix {
         self.cols = new_cols;
     }
 
-    pub fn sub_f(&mut self, numb: f32){
-        for item in self.data.iter_mut(){
-            *item -= numb;
-        };
-    }
-
-    pub fn sub_m(&mut self, mat: &Matrix){
-        unimplemented!()
-    }
-
-    pub fn add_f(&mut self, numb: f32){
-        for item in self.data.iter_mut(){
-            *item += numb;
-        };
-    }
-
-    pub fn add_m(mut self, mat: &Matrix){
-        unimplemented!()
-    }
-
-    pub fn scale_f(mut self, numb: f32){
-        for item in self.data.iter_mut(){
-            *item *= numb;
-        };
-    }
-
-    pub fn scale_m(mut self, mat: &Matrix){
-        unimplemented!()
-    }
-
-    pub fn div_f(mut self, numb: f32){
-        for item in self.data.iter_mut(){
-            *item /= numb;
-        };
-    }
-
-    pub fn div_m(mut self, mat: &Matrix){
-        unimplemented!()
-    }
-
-    pub fn mod_f(mut self, numb: f32){
-        for item in self.data.iter_mut(){
-            *item %= numb;
-        };
-    }
-
-    pub fn mod_m(mut self, mat: &Matrix){
-        unimplemented!()
-    }
-
-    pub fn is_orthogonal(&self) -> bool{
-        unimplemented!()
-    }
-
-    pub fn det_2x2(){
-        unimplemented!()
-    }
-
-    pub fn det_3x3(){
-        unimplemented!()
-    }
-
     /// Get a sub mutable matrix of the given matrix 
     /// 
     /// Returns None if the given rage did not fit the dimensions of the Matrix 
-    pub fn submatrix(self, rows:Range<usize>, cols:Range<usize>) -> Option<Matrix>{
-        //TODO: Get mutable vs reference to this matrix (?) 
+    pub fn submatrix(&self, rows:Range<usize>, cols:Range<usize>) -> Option<Matrix>{
+        // Check if the ranges are valid:
+        
+        // Create new data
+        //let item_count = &rows.end * &cols.end;
+        //let mut data: Vec<f32> = Vec::with_capacity(item_count);
+        //for row in rows{
+        //    for col in cols{
+        //        data.push(self.data[row*self.rows + col].clone())
+//
+        //    }
+        //}
+
         unimplemented!()
+
+        // Some(Matrix{
+        //     data,
+        //     rows: rows.end,
+        //     cols: cols.end
+        // })
     }
 
-    pub fn submatrix_as_slice(self, rows:Range<usize>, cols:Range<usize>) -> Option<Matrix>{
+    pub fn submatrix_as_slice(&self, rows:Range<usize>, cols:Range<usize>) -> Option<Matrix>{
         //TODO: Is this something that we want (?) 
         unimplemented!()
     }
@@ -403,11 +363,124 @@ impl Matrix {
         unimplemented!()
     }
 
-    pub fn inverse(mut self){
+    pub fn inverse(&mut self){
         unimplemented!()
     }
 
     pub fn get_inverse(&self)-> Matrix{
+        unimplemented!()
+    }
+
+    pub fn sub_f(&mut self, numb: f32){
+        for item in self.data.iter_mut(){
+            *item -= numb;
+        };
+    }
+
+    pub fn sub_m(&mut self, mat: &Matrix) -> Result<(), MatrixError>{
+        // Check shape
+        if self.shape() != mat.shape(){
+            return Err(MatrixError::ShapeMismatch { 
+                first_matrix_shape: self.shape(), 
+                second_matrix_shape: mat.shape() 
+            });
+        }
+        unimplemented!()
+    }
+
+    pub fn add_f(&mut self, numb: f32){
+        for item in self.data.iter_mut(){
+            *item += numb;
+        };
+    }
+
+    pub fn add_m(&mut self, mat: &Matrix) -> Result<(), MatrixError>{
+        // Check shape
+        if self.shape() != mat.shape(){
+            return Err(MatrixError::ShapeMismatch { 
+                first_matrix_shape: self.shape(), 
+                second_matrix_shape: mat.shape() 
+            });
+        }
+        unimplemented!()
+    }
+
+    pub fn scale_f(mut self, numb: f32){
+        for item in self.data.iter_mut(){
+            *item *= numb;
+        };
+    }
+
+    pub fn scale_m(&mut self, mat: &Matrix) -> Result<(), MatrixError>{
+        // Check shape
+        if self.shape() != mat.shape(){
+            return Err(MatrixError::ShapeMismatch { 
+                first_matrix_shape: self.shape(), 
+                second_matrix_shape: mat.shape() 
+            });
+        }
+        unimplemented!()
+    }
+
+    pub fn div_f(mut self, numb: f32) -> Result<(), MatrixError>{
+        // Check for divide by 0 error
+        if numb == 0.0{
+            return Err(MatrixError::DivideByZero);
+        }
+
+        for item in self.data.iter_mut(){
+            *item /= numb;
+        };
+
+        Ok(())
+    }
+
+    pub fn div_m(&mut self, mat: &Matrix) -> Result<(), MatrixError>{
+        // Check shape
+        if self.shape() != mat.shape(){
+            return Err(MatrixError::ShapeMismatch { 
+                first_matrix_shape: self.shape(), 
+                second_matrix_shape: mat.shape() 
+            });
+        }
+
+        // Check for divide by 0 error
+        for i in &mat.data{
+            if i == &0.0{
+                return Err(MatrixError::DivideByZero);
+            }
+        }
+
+        unimplemented!()
+    }
+
+    pub fn mod_f(&mut self, numb: f32){
+        for item in self.data.iter_mut(){
+            *item %= numb;
+        };
+    }
+
+    pub fn mod_m(&mut self, mat: &Matrix) -> Result<(), MatrixError>{
+        // Check shape
+        if self.shape() != mat.shape(){
+            return Err(MatrixError::ShapeMismatch { 
+                first_matrix_shape: self.shape(), 
+                second_matrix_shape: mat.shape() 
+            });
+        }
+
+        unimplemented!()
+    }
+
+    pub fn is_orthogonal(&self) -> bool{
+        unimplemented!()
+    }
+
+    pub fn det_2x2(){
+        unimplemented!()
+    }
+
+    pub fn det_3x3(){
         unimplemented!()
     }
     

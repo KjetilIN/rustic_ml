@@ -1,5 +1,4 @@
 use std::{fmt::Display, ops::{Range, RangeInclusive}};
-
 use rand::{distributions::{Standard, Uniform}, Rng};
 
 /// Matrix implementation
@@ -15,7 +14,7 @@ pub struct Matrix{
 
 
 /// Custom Error type for a `Matrix` operation
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum MatrixError {
     /// An error that occurs when a operation requires that two matrices have the exact same shape
     ShapeMismatch{
@@ -385,6 +384,7 @@ impl Matrix {
         })
     }
 
+    /// Not Implemented
     pub fn submatrix_as_slice(&self, rows:Range<usize>, cols:Range<usize>) -> Result<Matrix, MatrixError>{
         //TODO: Ignoring for now, not use case clear 
         unimplemented!()
@@ -420,24 +420,23 @@ impl Matrix {
 
         Ok(matrix)        
     }
-
-    pub fn cross_product(&mut self, mat: &Matrix) -> Result<Matrix, MatrixError>{
-        unimplemented!()
-    }
-
     
+    /// Not implemented
     pub fn transpose(&mut self){
         unimplemented!()
     }
 
+    /// Not implemented
     pub fn get_transposed(&self) -> Matrix{
         unimplemented!()
     }
 
+    /// Not implemented
     pub fn inverse(&mut self){
         unimplemented!()
     }
 
+    /// Not implemented
     pub fn get_inverse(&self)-> Matrix{
         unimplemented!()
     }
@@ -449,58 +448,39 @@ impl Matrix {
         return self.rows == 1 || self.cols == 1;
     }
 
+    /// Subtracts all values in the matrix by a given number (`f32`)
+    /// 
+    /// Mutates the matrix and makes the change. 
     pub fn sub_f(&mut self, numb: f32){
         for item in self.data.iter_mut(){
             *item -= numb;
         };
     }
 
-    pub fn sub_m(&mut self, mat: &Matrix) -> Result<(), MatrixError>{
-        // Check shape
-        if self.shape() != mat.shape(){
-            return Err(MatrixError::ShapeMismatch { 
-                first_matrix_shape: self.shape(), 
-                second_matrix_shape: mat.shape() 
-            });
-        }
-        unimplemented!()
-    }
-
+    /// Add a number (`f32`) to all values in the matrix
+    /// 
+    /// Mutates the matrix and makes the change. 
     pub fn add_f(&mut self, numb: f32){
         for item in self.data.iter_mut(){
             *item += numb;
         };
     }
 
-    pub fn add_m(&mut self, mat: &Matrix) -> Result<(), MatrixError>{
-        // Check shape
-        if self.shape() != mat.shape(){
-            return Err(MatrixError::ShapeMismatch { 
-                first_matrix_shape: self.shape(), 
-                second_matrix_shape: mat.shape() 
-            });
-        }
-        unimplemented!()
-    }
-
-    pub fn scale_f(mut self, numb: f32){
+    /// Scale all values in the matrix by a given scalar (`f32`)
+    /// 
+    /// Mutates the matrix and makes the change. 
+    pub fn scale_f(&mut self, numb: f32){
         for item in self.data.iter_mut(){
             *item *= numb;
         };
     }
 
-    pub fn scale_m(&mut self, mat: &Matrix) -> Result<(), MatrixError>{
-        // Check shape
-        if self.shape() != mat.shape(){
-            return Err(MatrixError::ShapeMismatch { 
-                first_matrix_shape: self.shape(), 
-                second_matrix_shape: mat.shape() 
-            });
-        }
-        unimplemented!()
-    }
 
-    pub fn div_f(mut self, numb: f32) -> Result<(), MatrixError>{
+    /// Scale all values in the matrix by a given scalar (`f32`)
+    /// 
+    /// Mutates the matrix and makes the change. Checks for division by 0. 
+    /// Returns a result based on this condition  
+    pub fn div_f(&mut self, numb: f32) -> Result<(), MatrixError>{
         // Check for divide by 0 error
         if numb == 0.0{
             return Err(MatrixError::DivideByZero);
@@ -513,41 +493,13 @@ impl Matrix {
         Ok(())
     }
 
-    pub fn div_m(&mut self, mat: &Matrix) -> Result<(), MatrixError>{
-        // Check shape
-        if self.shape() != mat.shape(){
-            return Err(MatrixError::ShapeMismatch { 
-                first_matrix_shape: self.shape(), 
-                second_matrix_shape: mat.shape() 
-            });
-        }
-
-        // Check for divide by 0 error
-        for i in &mat.data{
-            if i == &0.0{
-                return Err(MatrixError::DivideByZero);
-            }
-        }
-
-        unimplemented!()
-    }
-
+    /// Scale all values in the matrix by a given scalar (`f32`)
+    /// 
+    /// Mutates the matrix and makes the change. 
     pub fn mod_f(&mut self, numb: f32){
         for item in self.data.iter_mut(){
             *item %= numb;
         };
-    }
-
-    pub fn mod_m(&mut self, mat: &Matrix) -> Result<(), MatrixError>{
-        // Check shape
-        if self.shape() != mat.shape(){
-            return Err(MatrixError::ShapeMismatch { 
-                first_matrix_shape: self.shape(), 
-                second_matrix_shape: mat.shape() 
-            });
-        }
-
-        unimplemented!()
     }
 
     pub fn is_orthogonal(&self) -> bool{

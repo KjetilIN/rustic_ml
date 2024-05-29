@@ -2,7 +2,7 @@
 mod tests {
     use std::{ops::RangeInclusive, vec};
 
-    use rustic_ml::matrix::Matrix;
+    use rustic_ml::matrix::{Matrix, MatrixError};
 
     #[test]
     fn test_new_matrix_constructor(){
@@ -1108,4 +1108,79 @@ mod tests {
         
     }
 
+    #[test]
+    fn test_matrix_is_vector(){
+        let data: Vec<f32> = vec![0.0; 5];
+
+        let colum_mat = Matrix::from_vec(1, data.clone());
+        let row_mat = Matrix::from_vec(5, data.clone());
+        let neither_mat = Matrix::from_vec(2, data);
+
+        assert!(colum_mat.is_vector());
+        assert!(row_mat.is_vector());
+        assert!(!neither_mat.is_vector());
+    }
+
+    #[test]
+    fn test_matrix_sub_f(){
+        let data: Vec<f32> = vec![3.0; 9];
+
+        let mut matrix = Matrix::from_vec(3, data);
+        matrix.sub_f(1.0);
+
+        assert_eq!(matrix.data, vec![2.0; 9]);
+    }
+
+    #[test]
+    fn test_matrix_add_f(){
+        let data: Vec<f32> = vec![3.0; 9];
+
+        let mut matrix = Matrix::from_vec(3, data);
+        matrix.add_f(5.0);
+
+        assert_eq!(matrix.data, vec![8.0; 9]);
+    }
+
+    #[test]
+    fn test_matrix_scale_f(){
+        let data: Vec<f32> = vec![3.0; 9];
+
+        let mut matrix = Matrix::from_vec(3, data);
+        matrix.scale_f(5.0);
+
+        assert_eq!(matrix.data, vec![15.0; 9]);
+    }
+
+    #[test]
+    fn test_matrix_div_f_positive(){
+        let data: Vec<f32> = vec![45.0; 9];
+
+        let mut matrix = Matrix::from_vec(3, data);
+        matrix.div_f(5.0).unwrap();
+
+        assert_eq!(matrix.data, vec![9.0; 9]);
+    }
+
+    #[test]
+    fn test_matrix_div_f_negative(){
+        let data: Vec<f32> = vec![45.0; 9];
+
+        let mut matrix = Matrix::from_vec(3, data);
+        match matrix.div_f(0.0){
+            Err(err) => {
+                assert_eq!(err, MatrixError::DivideByZero);
+            }
+            Ok(_) => panic!("Should not be correct"),
+        };
+    }
+
+    #[test]
+    fn test_matrix_mod_f(){
+        let data: Vec<f32> = vec![10.0; 9];
+
+        let mut matrix = Matrix::from_vec(3, data);
+        matrix.mod_f(3.0);
+
+        assert_eq!(matrix.data, vec![1.0; 9]);
+    }
 }

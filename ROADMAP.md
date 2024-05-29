@@ -9,7 +9,7 @@ This file provides an overview of how the project is planned to evolve. It is or
 
 In this phase the knowledge of Machine Learning and Rust is low. Therefor learning is a big part of this phase. One of the goals is to build the machine learning library from scratch, which is why this step is also used to build these fundamental tools.
 
-- [ ] `Matrix` implementation ([#6](https://github.com/KjetilIN/rustic_ml/issues/6))
+- [x] `Matrix` implementation ([#6](https://github.com/KjetilIN/rustic_ml/issues/6))
 - [ ] `Dataframe` implementation ([#21](https://github.com/KjetilIN/rustic_ml/issues/21))
 - [ ] Complete course on ML.
     - See my repository for Python: https://github.com/KjetilIN/ML_Notes 

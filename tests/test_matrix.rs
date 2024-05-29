@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod tests {
-    use std::vec;
+    use std::{ops::RangeInclusive, vec};
 
     use rustic_ml::matrix::Matrix;
 
@@ -96,6 +96,92 @@ mod tests {
 
 
     } 
+
+    #[test]
+    fn test_matrix_with_rand_range(){
+        // Looping four times, just to make sure 
+        // Using random in this function 
+        for i in 1..4{
+            let range: RangeInclusive<f32> = 0.0..=(i as f32);
+            let matrix = Matrix::with_rand_range(100, 100, range.clone());
+
+            for i in &matrix.data{
+                assert!(range.contains(i))
+            }
+
+            assert_eq!(matrix.data.len(), (100*100));
+            assert_eq!(matrix.rows, 100);
+            assert_eq!(matrix.cols, 100);
+        }
+
+    }
+
+    #[test]
+    fn test_matrix_with_bin_range(){
+        // Looping four times, just to make sure 
+        // Using random in this function 
+        for _ in 0..4{
+            // 100x100 
+            let binary_matrix = Matrix::with_rand_bin(100, 100);
+
+            // Iterating the data and checking that it is within the range 
+            for i in &binary_matrix.data{
+                assert!(i >= &0.0, "{}", format!("Failed with '{:?}'", i));
+                assert!(i <= &1.0, "{}", format!("Failed with '{:?}'", i));
+            }
+
+            // Checking sizes
+            assert_eq!(binary_matrix.data.len(), (100*100));
+            assert_eq!(binary_matrix.rows, 100);
+            assert_eq!(binary_matrix.cols, 100);
+
+        }
+
+    }
+
+    #[test]
+    fn test_matrix_with_rand_0_to_10(){
+        // Looping four times, just to make sure 
+        // Using random in this function 
+        for _ in 0..4{
+            // 100x100 
+            let binary_matrix = Matrix::with_rand_0_to_10(100, 100);
+
+            // Iterating the data and checking that it is within the range 
+            for i in &binary_matrix.data{
+                assert!(i >= &0.0, "{}", format!("Failed with '{:?}'", i));
+                assert!(i <= &10.0, "{}", format!("Failed with '{:?}'", i));
+            }
+
+            // Checking sizes
+            assert_eq!(binary_matrix.data.len(), (100*100));
+            assert_eq!(binary_matrix.rows, 100);
+            assert_eq!(binary_matrix.cols, 100);
+
+        }
+    }
+
+    #[test]
+    fn test_matrix_with_rand_neg10_to_10(){
+        // Looping four times, just to make sure 
+        // Using random in this function 
+        for _ in 0..4{
+            // 100x100 
+            let binary_matrix = Matrix::with_rand_neg10_to_10(100, 100);
+
+            // Iterating the data and checking that it is within the range 
+            for i in &binary_matrix.data{
+                assert!(i >= &-10.0, "{}", format!("Failed with '{:?}'", i));
+                assert!(i <= &10.0, "{}", format!("Failed with '{:?}'", i));
+            }
+
+            // Checking sizes
+            assert_eq!(binary_matrix.data.len(), (100*100));
+            assert_eq!(binary_matrix.rows, 100);
+            assert_eq!(binary_matrix.cols, 100);
+
+        }
+    }
 
     #[test]
     fn test_get_matrix_positive(){

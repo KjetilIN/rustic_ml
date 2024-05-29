@@ -1,4 +1,6 @@
-use std::{fmt::Display, ops::Range};
+use std::{fmt::Display, ops::{Range, RangeInclusive}};
+
+use rand::{distributions::{Standard, Uniform}, Rng};
 
 /// Matrix implementation
 /// 
@@ -100,7 +102,30 @@ impl Matrix {
         let rows = data.len() / cols;
         Matrix { rows, cols, data }
     }
-    
+
+    pub fn with_rand_range(rows: usize, cols: usize, value_range: RangeInclusive<f32>) -> Self{
+        let mut rng = rand::thread_rng();
+        let data: Vec<f32> = (0..rows*cols).map(|_| rng.gen_range(value_range.clone())).collect();
+        Matrix { data, rows, cols}
+    }
+
+    pub fn with_rand_bin(rows: usize, cols: usize) -> Self{
+        let data: Vec<f32> = rand::thread_rng().sample_iter(Standard).take(rows*cols).collect();
+        Matrix { data, rows, cols}
+    }
+
+    pub fn with_rand_0_to_10(rows: usize, cols: usize) -> Self{
+        let distribution:Uniform<f32> = Uniform::new_inclusive(0.0, 10.0);
+        let data: Vec<f32> = rand::thread_rng().sample_iter(distribution).take(rows*cols).collect();
+        Matrix { data, rows, cols}
+    }
+
+    pub fn with_rand_neg10_to_10(rows: usize, cols: usize) -> Self{
+        let distribution:Uniform<f32> = Uniform::new_inclusive(-10.0, 10.0);
+        let data: Vec<f32> = rand::thread_rng().sample_iter(distribution).take(rows*cols).collect();
+        Matrix { data, rows, cols}
+    }
+
     /// Get an item from the Matrix 
     /// 
     /// Given the row and column of the item, retrieve a reference to the item.

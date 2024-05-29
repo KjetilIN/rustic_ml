@@ -89,18 +89,16 @@ impl Matrix {
     /// Creates a matrix based on the given amount of columns. Will add any missing values as default value 0.0. 
     /// Makes sure that the Matrix has completed rows. 
     pub fn from_vec(cols: usize, mut data: Vec<f32>) -> Self{
-        let mut rows = data.len() / cols; 
-        let missing_values = data.len() % cols;
+        let missing_values = cols - (data.len() % cols);
 
-        if missing_values > 0{
-            for _ in 0..missing_values{
+        if missing_values < cols {
+            for _ in 0..missing_values {
                 data.push(0.0);
             }
-            rows += 1;
-            
         }
 
-        Matrix{rows, cols, data}
+        let rows = data.len() / cols;
+        Matrix { rows, cols, data }
     }
     
     /// Get an item from the Matrix 
@@ -376,17 +374,24 @@ impl Matrix {
     /// Returns `Result` based on if this condition is met 
     pub fn multiply(&self, mat: &Matrix) -> Result<Matrix, MatrixError>{
 
-        if self.shape() != mat.shape(){
-            return Err(MatrixError::ShapeMismatch { 
-                first_matrix_shape: self.shape(), 
-                second_matrix_shape: mat.shape()}
-            );
+        // Check the matrix condition 
+        if self.cols != mat.rows{
+            return Err(MatrixError::MatrixMultiply);
         }
 
         // Create the new sum 
-        let mut matrix = Matrix::new(self.rows, self.cols);
+        let mut matrix = Matrix::new(self.rows, mat.cols);
         
-        
+        // Perform matrix multiplication
+        for i in 0..self.rows {
+            for j in 0..mat.cols {
+                let mut sum = 0.0;
+                for k in 0..self.cols {
+                    sum += self.data[i * self.cols + k] * mat.data[k * mat.cols + j];
+                }
+                matrix.data[i * mat.cols + j] = sum;
+            }
+        }
 
         Ok(matrix)        
     }
@@ -394,7 +399,6 @@ impl Matrix {
     pub fn cross_product(&mut self, mat: &Matrix) -> Result<Matrix, MatrixError>{
         unimplemented!()
     }
-
 
     
     pub fn transpose(&mut self){
@@ -410,6 +414,10 @@ impl Matrix {
     }
 
     pub fn get_inverse(&self)-> Matrix{
+        unimplemented!()
+    }
+
+    pub fn is_vector(&self) -> bool{
         unimplemented!()
     }
 

@@ -1,6 +1,8 @@
 #[cfg(test)]
 mod tests {
-    use rustic_ml::matrix::{self, Matrix};
+    use std::vec;
+
+    use rustic_ml::matrix::Matrix;
 
     #[test]
     fn test_new_matrix_constructor(){
@@ -41,7 +43,7 @@ mod tests {
     }   
 
     #[test]
-    fn test_new_matrix_constructor_from_vec(){
+    fn test_new_matrix_constructor_from_vec_1(){
         // Testing a 2x4 matrix 
         let rows = 2; 
         let cols = 4; 
@@ -54,6 +56,21 @@ mod tests {
         assert_eq!(matrix.data.len(), rows*cols);
         assert_eq!(matrix.cols, cols);
         assert_eq!(matrix.rows, rows);
+    }
+
+    #[test]
+    fn test_new_matrix_constructor_from_vec_2(){
+        // Data with 6x3 (in this case missing values is appended as 0)
+        let data_a:Vec<f32> = vec![1.0, 0.0, 1.0, 
+                                    0.0, 2.0, 1.0, 
+                                    1.0, 0.0, 0.0, 
+                                    1.0, 1.0, 0.0, 
+                                    1.0, 1.0, 2.0, 
+                                    0.0];
+
+        let mat_a: Matrix = Matrix::from_vec(3, data_a);
+
+        assert_eq!(mat_a.data.len(), (6*3))
     }
 
     #[test]
@@ -912,4 +929,97 @@ mod tests {
 
 
     }
+
+    #[test]
+    fn test_multiply_matrix_positive_1(){
+        // Testing on example from Wikipedia: 
+        // https://en.wikipedia.org/wiki/Matrix_multiplication
+
+        let data_a:Vec<f32> = vec![1.0, 0.0, 1.0,
+                                   2.0, 1.0, 1.0,
+                                   0.0, 1.0, 1.0,
+                                   1.0, 1.0, 2.0];
+
+        let mat_a: Matrix = Matrix::from_vec(3, data_a);
+
+        let data_b:Vec<f32> = vec![1.0, 2.0, 1.0,
+                                   2.0, 3.0, 1.0,
+                                   4.0, 2.0, 2.0];
+
+        let mat_b:Matrix = Matrix::from_vec(3, data_b);
+
+        let result_mat: Matrix = match mat_a.multiply(&mat_b){
+            Ok(mat) => mat,
+            Err(_) => panic!("Multiplication should happened without errors"),
+        };
+
+        let expected_data: Vec<f32> = vec![5.0, 4.0, 3.0, 8.0, 9.0, 5.0, 6.0, 5.0, 3.0, 11.0, 9.0, 6.0]; 
+        assert_eq!(result_mat.data, expected_data);
+        assert_eq!(result_mat.rows, mat_a.rows);
+        assert_eq!(result_mat.cols, mat_b.cols)
+
+    }
+
+    #[test]
+    fn test_multiply_matrix_positive_2(){
+
+        // Data with 6x3 (in this case missing values is appended as 0)
+        let data_a:Vec<f32> = vec![1.0, 0.0, 1.0, 
+                                   0.0, 2.0, 1.0, 
+                                   1.0, 0.0, 0.0, 
+                                   1.0, 1.0, 0.0, 
+                                   1.0, 1.0, 2.0, 
+                                   0.0];
+
+        let mat_a: Matrix = Matrix::from_vec(3, data_a);
+
+        // 3x3
+        let data_b:Vec<f32> = vec![1.0, 2.0, 1.0,
+                                    2.0, 3.0, 1.0,
+                                    4.0, 2.0, 2.0];
+
+        let mat_b:Matrix = Matrix::from_vec(3, data_b);
+
+        // Testing but the matrixes can not be multiplied
+        let result = match mat_a.multiply(&mat_b){
+            Ok(mat) => mat,
+            Err(_) => panic!("Expected error"), 
+        };
+
+        assert_eq!(result.rows, 6);
+        assert_eq!(result.cols, 3);
+        assert_eq!(result.data, vec![
+            5.0, 4.0, 3.0,
+            8.0, 8.0, 4.0,
+            1.0, 2.0, 1.0,
+            3.0, 5.0, 2.0,
+            11.0, 9.0, 6.0,
+            0.0, 0.0, 0.0,
+        ]);
+
+    }
+
+    #[test]
+    fn test_multiply_matrix_negative(){
+        let data_a:Vec<f32> = vec![1.0, 0.0, 1.0, 0.0,
+                                   2.0, 1.0, 1.0,0.0,
+                                   0.0, 1.0, 1.0,0.0,
+                                   1.0, 1.0, 2.0, 0.0,];
+
+        let mat_a: Matrix = Matrix::from_vec(4, data_a);
+
+        let data_b:Vec<f32> = vec![1.0, 2.0, 1.0,
+                                   2.0, 3.0, 1.0,
+                                   4.0, 2.0, 2.0];
+
+        let mat_b:Matrix = Matrix::from_vec(3, data_b);
+
+        // Testing but the matrixes can not be multiplied
+        let _ = match mat_a.multiply(&mat_b){
+            Ok(_) => panic!("Expected error"),
+            Err(_) => (), // Success
+        };
+        
+    }
+
 }

@@ -442,8 +442,11 @@ impl Matrix {
         unimplemented!()
     }
 
+    /// Check if `Matrix` can act as a vector
+    /// 
+    /// Returns true if it contains one row or one column
     pub fn is_vector(&self) -> bool{
-        unimplemented!()
+        return self.rows == 1 || self.cols == 1;
     }
 
     pub fn sub_f(&mut self, numb: f32){

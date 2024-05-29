@@ -11,3 +11,12 @@ readme = "README.md"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+
+
+# Development dependencies 
+[dev-dependencies]
+criterion = {version="0.4", features=["html_reports"]}
+
+[[bench]]
+name = "matrix_benchmark"
+harness = false 

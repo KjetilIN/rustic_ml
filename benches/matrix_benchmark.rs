@@ -1,10 +1,9 @@
 use criterion::{self, black_box, criterion_group, criterion_main, Criterion};
 use rustic_ml::matrix::Matrix;
 
-
 fn benchmark_matrix_multiplication(c: &mut Criterion) {
     // Define matrix sizes and data
-    let size = 100; 
+    let size = 100;
     let data_a: Vec<f32> = (0..size * size).map(|x| x as f32).collect();
     let data_b: Vec<f32> = (0..size * size).map(|x| x as f32).collect();
 
@@ -23,23 +22,23 @@ fn benchmark_matrix_multiplication(c: &mut Criterion) {
 
 fn criterion_small_config() -> Criterion {
     Criterion::default()
-        .sample_size(100) 
+        .sample_size(100)
         .measurement_time(std::time::Duration::new(10, 0))
         .warm_up_time(std::time::Duration::new(3, 0))
 }
 
-criterion_group!{
+criterion_group! {
     name = small_benches;
     config = criterion_small_config();
     targets = benchmark_matrix_multiplication
 }
 
-// MORE EXTENSIVE BENCHMARK TESTING 
+// MORE EXTENSIVE BENCHMARK TESTING
 
 #[cfg(feature = "extensive_benchmark")]
 fn benchmark_large_matrix_multiplication(c: &mut Criterion) {
     // Define large matrix sizes and data
-    let size = 1000; 
+    let size = 1000;
     let data_a: Vec<f32> = (0..size * size).map(|x| x as f32).collect();
     let data_b: Vec<f32> = (0..size * size).map(|x| x as f32).collect();
 
@@ -56,20 +55,16 @@ fn benchmark_large_matrix_multiplication(c: &mut Criterion) {
     });
 }
 
-
-
 #[cfg(feature = "extensive_benchmark")]
 fn criterion_large_config() -> Criterion {
     Criterion::default()
-        .sample_size(40) 
+        .sample_size(40)
         .measurement_time(std::time::Duration::new(60, 0))
         .warm_up_time(std::time::Duration::new(5, 0))
 }
 
-
-
 #[cfg(feature = "extensive_benchmark")]
-criterion_group!{
+criterion_group! {
     name = large_benches;
     config = criterion_large_config();
     targets = benchmark_large_matrix_multiplication

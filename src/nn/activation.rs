@@ -28,6 +28,16 @@ pub fn relu(x:f32) -> f32{
     return 0.0
 }
 
+/// Leaky ReLu activation function
+/// 
+/// Implemented from the function: <https://en.wikipedia.org/wiki/Rectifier_(neural_networks)>
+pub fn leaky_relu(x:f32) -> f32{
+    if x > 0.0{
+        return x;
+    }
+    return 0.1*x;
+}
+
 /// Softplus activation function
 /// 
 /// Implemented from the function: <https://en.wikipedia.org/wiki/Activation_function>

@@ -23,6 +23,12 @@ mod tests {
         assert_eq!(relu(-0.123), 0.0);
 
     }
+    #[test]
+    fn test_activation_leaky_relu(){
+        assert_eq!(leaky_relu(0.0), 0.0);
+        assert_eq!(leaky_relu(1.12), 1.12);
+        assert_eq!(leaky_relu(-100.0), -10.0);
+    }
 
     #[test]
     fn test_activation_softplus(){

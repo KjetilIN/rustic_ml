@@ -145,8 +145,7 @@ To lower the cost function we need to find the correct set of weights and biases
 
 To minimize the cost function, we can image that it is plotted in a graph. With more training sets, the more dimensions. With only two training input, we can even visualize it in a graph. (It helps to visualize it with only to variables): 
 
-IMAGE 
-
+![image](https://github.com/KjetilIN/rustic_ml/assets/66110094/b0c3ea71-385b-4474-943d-8efeffc717eb)
 
 The global minimum for the function is what we are after. We can find the minimum by using calculus. We can derive the function, but this is very hard with more than a few variables. 
 
@@ -202,7 +201,7 @@ $$
 
 The weight for the connection from the k-th neuron in the (l −1)-th layer to the j-th neuron in the l-th layer. 
 
-IMAGE OF EXAMPLE
+![image](https://github.com/KjetilIN/rustic_ml/assets/66110094/77b4eefa-6bdc-411d-9ad8-3634f32c697b)
 
 
 ### Notation for a bias or activation

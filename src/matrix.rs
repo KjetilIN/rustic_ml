@@ -12,6 +12,7 @@ use std::{
 /// A mathematical data structure.
 /// Read more about matrices here:
 /// <https://en.wikipedia.org/wiki/Matrix_(mathematics)>
+#[derive(Debug, Clone)]
 pub struct Matrix {
     pub data: Vec<f32>,
     pub rows: usize,
@@ -449,6 +450,35 @@ impl Matrix {
         }
 
         Ok(matrix)
+    }
+
+
+    /// Add a vector to the given `Matrix`
+    /// 
+    /// Commonly used when you need to add a vector of biases to the matrix of weights, in a neural network. 
+    /// This operation is covered in the book: Deep learning - Linear algebra (Chapter 2, section 2.1) <br>
+    /// Link: <https://www.deeplearningbook.org/contents/linear_algebra.html>
+    pub fn add_vec(&mut self, mat:&Matrix) -> Result<(), MatrixError>{
+        // Check that the given matrix is a vector 
+        if mat.cols != 1 {
+            return Err(MatrixError::ShapeMismatch { first_matrix_shape: self.shape(), second_matrix_shape: mat.shape()})
+        }
+
+        // Check the matrix condition
+        if self.rows != mat.rows {
+            return Err(MatrixError::MatrixMultiply);
+        }
+
+        for i in 0..self.rows {
+            for j in 0..self.cols {
+                self.data[i*self.cols + j] += mat.data[j];
+            }
+        }
+
+        // Reshaping the matrix 
+        self.reshape(self.rows, 1);
+
+        Ok(())
     }
 
     /// Not implemented

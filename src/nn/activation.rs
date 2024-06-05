@@ -1,5 +1,7 @@
 use std::f32::consts::E;
 
+use crate::matrix::Matrix;
+
 /// Step activation function
 /// 
 /// Implemented from the function: <https://en.wikipedia.org/wiki/Step_function>
@@ -15,6 +17,17 @@ pub fn step(x:f32) -> f32{
 /// Implemented from the function: <https://en.wikipedia.org/wiki/Sigmoid_function>
 pub fn sigmoid(x:f32) -> f32{
     return 1.0 / (1.0 + E.powf(-x));
+}
+
+/// Sigmoid activation function for `Matrix`
+/// 
+/// Uses the `sigmoid` function for each element in the matrix
+pub fn sigmoid_mat(mat:&mut Matrix){
+    for i in 0..mat.rows {
+        for j in 0..mat.cols {
+            mat.data[i*mat.cols + j] = sigmoid(mat.data[i*mat.cols + j]);
+        }
+    }
 }
 
 

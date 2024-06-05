@@ -1,4 +1,4 @@
-use crate::{matrix::{Matrix, MatrixError}, nn::activation::sigmoid};
+use crate::{matrix::{Matrix, MatrixError}, nn::activation::{sigmoid, sigmoid_mat}};
 
 
 /// Neural Network structure
@@ -55,14 +55,29 @@ impl NN {
     }
 
 
-    pub fn feed_forward(&mut self, mut a: Matrix) -> Result<Matrix, MatrixError>{
+    pub fn feed_forward(&mut self, a: &Matrix) -> Result<Matrix, MatrixError>{
+        // Cloning the input layer (ok for now since this clone will not preform that bad)
+        let mut layer_output = a.clone();
+
         for (bias, weight) in self.biases.iter().zip(&self.weights){
-            a = weight.multiply(&a)?;
+            // 1. Multiply the weight by the input layer
+            layer_output = weight.multiply(&layer_output)?;
+
+            // 2. Add the vector of biases 
+            layer_output.add_vec(bias)?;
+
+            // 3. Use the sigmoid activation function for all values in the input layer 
+            sigmoid_mat(&mut layer_output);
+
+            // 4. Given matrix layer is now the new input layer for the next level
         }
 
-        unimplemented!("Not done");
+        // 5. Return the input layer as the output layer
+        Ok(layer_output)
+    }
 
-        Ok(a)
+    pub fn apply_stochastic_gradient_descent(){
+        unimplemented!()
     }
     
 }

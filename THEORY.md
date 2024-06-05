@@ -2,9 +2,21 @@
 
 > This markdown file contains theory and notes from my learning process. 
 
-
 ## Table of Content 
 
+- [Neural Networks Explained](#neural-networks-explained)
+  - [Table of Content](#table-of-content)
+  - [Perceptron](#perceptron)
+  - [Sigmoid:  Learning and Activation functions](#sigmoid--learning-and-activation-functions)
+  - [The architecture of neural networks](#the-architecture-of-neural-networks)
+  - [Simple network to classify handwritten digits](#simple-network-to-classify-handwritten-digits)
+  - [Gradient Decent](#gradient-decent)
+  - [Feedforward](#feedforward)
+    - [Notation for a specific weight](#notation-for-a-specific-weight)
+    - [Notation for a bias or activation](#notation-for-a-bias-or-activation)
+    - [Notation of a activation](#notation-of-a-activation)
+  - [Backpropagation](#backpropagation)
+    - [Two Assumptions for Backpropagation](#two-assumptions-for-backpropagation)
 
 
 ## Perceptron
@@ -103,6 +115,9 @@ Then we add 15 neurons in the second layer, and the output layer has 10 neurons.
 We can argue that 10 output neurons makes sense if a all the hidden neurons each fire when a given feature is present. Then it makes sense that 10 works - 4 output neurons would try to find the more significant features which will be very hard to determine. 
 
 
+**NB!** Note that applying the __sigmoid__ function to a vector/matrix, it is the same as applying it to each element in the vector/matrix
+
+
 ## Gradient Decent 
 
 To explain Gradient Decent, we will use the classification of written digits. Each input is a vector of the pixel values. 
@@ -143,7 +158,6 @@ The gradient vector is (by taking the partial derivative of all variables, as a 
 
 $$
 \nabla C \equiv \left( \frac{\partial C}{\partial v_1}, \frac{\partial C}{\partial v_2}, \ldots, \frac{\partial C}{\partial v_m} \right)^T
-
 $$
 
 Then we can change the variables such that the change in cost function is negative:
@@ -174,4 +188,62 @@ $$
 
 It is much faster to choose a small batch and then apply this gradient to the full batch. 
 
+## Feedforward
 
+This is a fast matrix-based approach for computing the output of the network. By feeding the input through the network through all the layers. Here is some important notation for the network: 
+
+
+### Notation for a specific weight
+First notation of the weight: 
+
+$$
+W_{jk}^l
+$$
+
+The weight for the connection from the k-th neuron in the (l −1)-th layer to the j-th neuron in the l-th layer. 
+
+IMAGE OF EXAMPLE
+
+
+### Notation for a bias or activation
+
+$$
+a_{j}^l
+$$
+
+- l-th layer
+- j-th neuron (counted from top down)
+
+### Notation of a activation 
+
+The full notation for a single activation is then: 
+
+$$
+a_j^l = \sigma \left( \sum_k w_{jk}^l a_k^{l-1} + b_j^l \right)
+$$
+
+This is simplified to: 
+
+$$
+a^l = \sigma ( w^l a^{l-1} + b^l )
+$$
+
+
+> This expression gives us a much more global way of thinking about how the activations in one layer relate to activations in the previous layer: we just apply the weight matrix to the activations,then add the bias vector,and finally apply the σ function
+>
+> Micheal Nielsen
+
+## Backpropagation 
+
+Backpropagation is an algorithm for computing the gradient of the cost function. It is not a simple fast algorithm but it gives insights into how changing weights and biases changes the behavior of the overall network. 
+
+The goal is to compute these partial derivatives:
+
+$$
+\frac{\partial C}{\partial w}, \frac{\partial C}{\partial b}
+$$
+
+
+### Two Assumptions for Backpropagation
+
+1. 

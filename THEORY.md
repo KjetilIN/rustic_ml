@@ -17,6 +17,12 @@
     - [Notation of a activation](#notation-of-a-activation)
   - [Backpropagation](#backpropagation)
     - [Two Assumptions for Backpropagation](#two-assumptions-for-backpropagation)
+    - [Four fundamental equations behind backpropagation](#four-fundamental-equations-behind-backpropagation)
+      - [1. An equation for the error in the output layer (BP1)](#1-an-equation-for-the-error-in-the-output-layer-bp1)
+      - [2. An equation for the error in terms of the error in the next layer (BP2)](#2-an-equation-for-the-error-in-terms-of-the-error-in-the-next-layer-bp2)
+      - [3. An equation for the rate of change of the cost with respect to any bias in the network (BP3)](#3-an-equation-for-the-rate-of-change-of-the-cost-with-respect-to-any-bias-in-the-network-bp3)
+      - [4. An equation for the rate of change of the cost with respect to any weight in the network (BP4)](#4-an-equation-for-the-rate-of-change-of-the-cost-with-respect-to-any-weight-in-the-network-bp4)
+    - [The backpropagation algorithm](#the-backpropagation-algorithm)
 
 
 ## Perceptron
@@ -245,4 +251,94 @@ $$
 
 ### Two Assumptions for Backpropagation
 
-1. 
+1. The cost function has to be written as an average of cost functions over cost function C_x for individual training set, x.
+$$
+C = \frac{1}{n} \sum_x C_x
+$$
+
+We need this because backpropagation lets us calculate partial derivatives for a single training example.
+
+2. The cost function can we written as a function of the output of the neural network 
+
+### Four fundamental equations behind backpropagation 
+
+We can define an error for each layer `l` and neuron `j`. Change in this value will effect the cost function for the neural network:
+
+$$
+\delta_{j}^{l} = \frac{\partial C}{\partial z_{j}^{l}}
+$$
+
+Each error can change the cost function a lot to the more correct value. The four fundamental equations will allow us to compute the error for each layer and the gradient cost function. T
+
+> Be warned, though: you shouldn’t expect to instantaneously assimilate the equations.
+> 
+> Micheal Nielsen
+
+
+#### 1. An equation for the error in the output layer (BP1)
+
+$$
+\delta_{j}^{L} = \frac{\partial C}{\partial a_{j}^{L}} \sigma'(z_{j}^{L})
+$$
+
+- Partial derivatives determines how fast the cost is changing the j-th neuron.
+- The sigma derivative determines how fast the activation function is changing for the given output. 
+
+This equation is easy to compute and will give little overhead. Especially since we are using the given cost function (mean squared error). 
+
+This equation is rewritten to **matrix form** like this: 
+
+$$
+\delta^{L} = \nabla_{a} C \odot \sigma'(z_{j}^{L}) 
+$$
+
+
+#### 2. An equation for the error in terms of the error in the next layer (BP2)
+
+$$
+\delta^{l} = ((w^{k+1})^T \nabla^{l+1}) \odot \sigma'(z_{j}^{l}) \\
+$$
+
+Given that we know the error at the next layer. Applying the transposed next weighted matrix can be though of as moving the error backward through the network giving us some sort of measure of the error backward through the activation function in layer l, and then we take the hammond product of the change in activation function. 
+
+Given (BP1) and (BP2), we can fist calculate the error for layer l, and then use (BP2) to compute the error for all layers before layer l!
+
+#### 3. An equation for the rate of change of the cost with respect to any bias in the network (BP3)
+
+$$
+\frac{\partial C}{\partial b_j^l} = \delta_{j}^{l}
+$$
+
+The error is exactly equal to the partial derivative with respect to the bias. The shorthand for this equation is:  
+
+$$
+\frac{\partial C}{\partial b} = \delta
+$$
+
+#### 4. An equation for the rate of change of the cost with respect to any weight in the network (BP4)
+
+$$
+\frac{\partial C}{\partial w_jk^l} = a_k^{l-1} \delta_{j}^{l}
+$$
+
+This tells us that the partial derivative in weights is equal to the error for the layer multiplied with the activation of the last activation. It is rewritten to: 
+
+$$
+\frac{\partial C}{\partial wl} = a_{\text{in}} \delta_{\text{out}}
+$$
+
+It is understood that a_in is the activation for the neuron input to the weight w, delta is the error for the neuron output from the weight w. If a_in is small, the gradient term also tends to be small. This means that it __learns slowly__. 
+
+If the weight in the final layer is either low activation of high activation, then it will learn slowly. When this happens, we say that the neuron has been **saturated**. 
+
+### The backpropagation algorithm 
+
+The algorithm: 
+
+1. **Input x:** Set the corresponding activation a1 for the input layer.
+2. **Feedforward:** For each l = 2,3,...,L compute zl = wlal−1 + bl and al = σ(zl). 
+3. **Output error δL:** Compute the vector δL =∇aC σ(zL). 
+4. **Backpropagate the error:** For each l = L−1,L−2,...,2 compute δl = ((wl+1)Tδl+1) σ(zl). 
+5. **Output:** The gradient of the cost function is given by ∂C ∂ wl jk = al−1 k δl j and ∂C ∂ bl j = δl j .
+
+We compute the error backwards. Starting from the final layer. Then idea comes from the proofs for the four equation. 

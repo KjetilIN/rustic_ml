@@ -1,4 +1,4 @@
-use crate::{matrix::{Matrix, MatrixError}, nn::activation::{sigmoid, sigmoid_mat}};
+use crate::{matrix::{Matrix, MatrixError}, nn::activation::sigmoid_mat};
 
 
 /// Neural Network structure
@@ -77,7 +77,10 @@ impl NN {
     }
 
     pub fn apply_stochastic_gradient_descent(){
-        unimplemented!()
+        todo!()
     }
     
+    pub fn backpropagation(){
+        todo!()
+    }
 }

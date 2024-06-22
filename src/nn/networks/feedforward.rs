@@ -8,14 +8,14 @@ use crate::{matrix::{Matrix, MatrixError}, nn::activation::sigmoid_mat};
 /// - sizes: vector of the number of neurons in each layer
 /// - biases: biases of the whole network as a vector of matrixes
 /// - weights: weights of the whole network as a vector of matrixes 
-struct NN{
+struct NeuralNetwork{
     pub layers: usize,
     pub sizes: Vec<u32>,
     pub biases: Vec<Matrix>,
     pub weights: Vec<Matrix>
 }
 
-impl NN {
+impl NeuralNetwork {
     /// Create a new neural network
     /// 
     /// Takes the vector of neurons. 
@@ -46,7 +46,7 @@ impl NN {
             weights.push(weight);
         }
 
-        NN { 
+        NeuralNetwork { 
             layers: sizes.len(), 
             sizes, 
             biases, 
@@ -79,8 +79,39 @@ impl NN {
     pub fn apply_stochastic_gradient_descent(){
         todo!()
     }
+
+    fn update_mini_batch(&mut self, mini_batch:Vec<(f32, f32)>, learning_rate:f32){
+        // Initialize nabla_b => partial derivative with respect to the biases
+        let mut nabla_b: Vec<Matrix> = self.biases.iter().map(|b| Matrix::new(b.rows, b.cols)).collect();
+        
+        // Initialize nabla_w => partial derivative with respect to the weights
+        let mut nabla_w: Vec<Matrix> = self.weights.iter().map(|w| Matrix::new(w.rows, w.cols)).collect();
+
+        // Loop through the training set
+        for &(x, y) in mini_batch.iter() {
+            let (delta_nabla_b, delta_nabla_w) = self.backprop(&x, &y);
+            for nb in nabla_b.iter_mut() {
+                *nb += &delta_nabla_b;
+            }
+            for nw in nabla_w.iter_mut() {
+                *nw += &delta_nabla_w;
+            }
+        }
+
+        let mini_batch_size: f32 = mini_batch.len() as f32;
+
+        // Update weights and biases
+        for (w, nw) in self.weights.iter_mut().zip(nabla_w.iter()) {
+            *w -= &(nw * (learning_rate / mini_batch_size));
+        }
+        for (b, nb) in self.biases.iter_mut().zip(nabla_b.iter()) {
+            *b -= &(nb * (learning_rate / mini_batch_size));
+        }
+
+        todo!()
+    }
     
-    pub fn backpropagation(){
+    fn backprop(&self, x: &f32, y:&f32) -> (f32, f32){
         todo!()
     }
 }

@@ -4,7 +4,7 @@ use rand::{
 };
 use std::{
     fmt::Display,
-    ops::{Range, RangeInclusive},
+    ops::{Add, AddAssign, Mul, Range, RangeInclusive, Sub, SubAssign},
 };
 
 /// Matrix implementation
@@ -571,5 +571,114 @@ impl Matrix {
 
     pub fn det_3x3() {
         unimplemented!()
+    }
+}
+
+/// Implementing the add trait for the Matrix structure 
+impl Add for &Matrix {
+    type Output = Matrix;
+
+    fn add(self, other: &Matrix) -> Self::Output {
+        assert_eq!(self.rows, other.rows);
+        assert_eq!(self.cols, other.cols);
+        let data = self
+            .data
+            .iter()
+            .zip(other.data.iter())
+            .map(|(a, b)| a + b)
+            .collect();
+        Matrix {
+            data,
+            rows: self.rows,
+            cols: self.cols,
+        }
+    }
+}
+
+/// Implementing the add trait for the Matrix structure 
+impl Add<&f32> for &Matrix {
+    type Output = Matrix;
+
+    fn add(self, other: &f32) -> Self::Output {
+        let data = self
+            .data
+            .iter()
+            .map(|a| a + other)
+            .collect();
+        Matrix {
+            data,
+            rows: self.rows,
+            cols: self.cols,
+        }
+    }
+}
+
+/// Implement the subtract matrix 
+impl Sub for &Matrix{
+    type Output = Matrix;
+
+    fn sub(self, other: &Matrix) -> Self::Output {
+        assert_eq!(self.rows, other.rows);
+        assert_eq!(self.cols, other.cols);
+        let data = self
+            .data
+            .iter()
+            .zip(other.data.iter())
+            .map(|(a, b)| a - b)
+            .collect();
+        Matrix {
+            data,
+            rows: self.rows,
+            cols: self.cols,
+        }
+    }
+}
+
+
+// Implement addition assignment for matrix
+impl AddAssign<&Matrix> for Matrix {
+    fn add_assign(&mut self, other: &Matrix) {
+        assert_eq!(self.rows, other.rows);
+        assert_eq!(self.cols, other.cols);
+        self.data
+            .iter_mut()
+            .zip(other.data.iter())
+            .for_each(|(a, b)| *a += b);
+    }
+}
+
+// Implement addition assignment for matrix
+impl AddAssign<&f32> for Matrix {
+    fn add_assign(&mut self, other: &f32) {
+        self.data
+            .iter_mut()
+            .for_each(|a| *a += other);
+    }
+}
+
+
+// Implement scalar multiplication
+impl Mul<f32> for &Matrix {
+    type Output = Matrix;
+
+    fn mul(self, scalar: f32) -> Matrix {
+        let data = self.data.iter().map(|x| x * scalar).collect();
+        Matrix {
+            data,
+            rows: self.rows,
+            cols: self.cols,
+        }
+    }
+}
+
+// Implement subtraction assignment for matrix
+impl SubAssign<&Matrix> for Matrix {
+    fn sub_assign(&mut self, other: &Matrix) {
+        assert_eq!(self.rows, other.rows);
+        assert_eq!(self.cols, other.cols);
+        self.data
+            .iter_mut()
+            .zip(other.data.iter())
+            .for_each(|(a, b)| *a -= b);
     }
 }

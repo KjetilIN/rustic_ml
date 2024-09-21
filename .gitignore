@@ -18,3 +18,12 @@ Cargo.lock
 
 /target
 .vscode
+
+
+# Ignore extra files from the latex 
+/docs/*.log
+/docs/*.aux
+/docs/*.fls
+/docs/*.gz
+/docs/*.fdb_latexmk
+/docs/*.out

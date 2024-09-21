@@ -1,0 +1,49 @@
+\documentclass{article}
+\usepackage{tikz}
+\usepackage{amsmath}
+\usepackage[colorlinks=true, urlcolor=blue, linkcolor=red]{hyperref}
+\begin{document}
+    \section{Perceptron Theory}
+
+    Perceptron is also known as a single neuron. 
+    It is used as a binary classifier, and is a type of supervised learning. After training on data, it is able to classify a given input to one of two classes. 
+
+    It was introduced in 1943 by Warren McCulloch and Walter Pitts.
+    They released a paper in 1958 with all the details of the perceptron \url{https://psycnet.apa.org/doiLanding?doi=10.1037%2Fh0042519}.
+    
+
+    \subsection{Requirements}
+
+    There is limitation for using the perceptron:
+
+    \begin{itemize}
+        \item Binary classification only - i.e only two classes in the dataset.
+        \item Training data must be labeled.
+        \item Data has to be linearly separable.
+    \end{itemize}
+
+    \subsection{Definition}
+
+    The perceptron can be defined as a function $f(\vec{x})$, that take a feature vector $\vec{x}$:
+
+    \begin{align}
+        f(\vec{x}) &= h(\vec{w} \cdot \vec{x} + b) \\
+                   &= h(w_1 \cdot x_1 + w_2 \cdot x_2 + b)
+    \end{align}
+
+    Where $\vec{w}$ is the weight vector with the two weights for the perceptron and $b$ is the bias of the network.
+    
+    Note that we use a activation function called \textit{Heaviside step function}. 
+    The output of the activation function is either 0 or 1. 
+
+    \subsection{Why do we need a bias?}
+
+
+
+    \subsection{Training}
+
+    
+
+
+
+\end{document}

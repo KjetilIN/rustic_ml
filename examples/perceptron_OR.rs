@@ -38,4 +38,7 @@ fn main() {
 
     // Print the accuracy 
     println!("Model accuracy: {}%", accuracy);
+
+    // Print model details
+    perceptron.print_model();
 }

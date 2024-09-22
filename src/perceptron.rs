@@ -59,24 +59,35 @@ impl Perceptron {
         }
     }
 
-    /// Initializes a `Perceptron` with a specified learning rate
-    /// and random bias and weights.
-    ///
+
+    /// Sets the learning rate for the given Perceptron and returns the modified
+    /// perceptron.
+    /// 
+    /// Method should be used by chaining.
+    /// 
     /// Arguments:
-    ///
-    /// - `learning_rate`: represents the rate at which the weights of the perceptron are
-    /// updated during training. It is a hyperparameter that controls the step size in the optimization
-    /// process.
-    ///
+    /// 
+    /// . `learning_rate`: the rate at which a machine learning model adjusts
+    /// its parameters during training.
+    /// 
     /// Returns:
-    ///
-    /// A new instance of the `Perceptron` struct with the specified `learning_rate`, a random `bias`,
-    /// and random weights `w1` and `w2`.
+    /// 
+    /// Returns the modified Perceptron with given learning rate
     pub fn learning_rate(mut self, learning_rate: f64) -> Self {
         self.learning_rate = learning_rate;
         self
     }
 
+    /// Sets the bias value of the Perceptron and returns the modified Perceptron.
+    /// 
+    /// Arguments:
+    /// 
+    /// - `bias`: The `bias` parameter in the `bias` function is a floating-point number (`f64`) that
+    /// represents the bias value to be set for the object.
+    /// 
+    /// Returns:
+    /// 
+    /// Returns the modified Perceptron with given bias
     pub fn bias(mut self, bias: f64) -> Self {
         self.bias = bias;
         self
@@ -138,12 +149,111 @@ impl Perceptron {
         }
     }
 
+    pub fn fit_until_halt(&mut self, x_train: &Vec<(f64, f64)>, y_train: &Vec<f64>) {
+        // Loop forever
+        loop{
+            // Variable for if the weights have been updated
+            let mut has_updated = false;
+
+            // Iterate over the dataset and recalculate the 
+            for (x, y) in x_train.iter().zip(y_train.iter()){
+                let target = *y;
+                let guess = self.predict(x) as f64;
+
+                // Check if we need to update the weights
+                if target != guess{
+                    // Update weights
+                    self.w1 += self.learning_rate * (target - guess) * x.0;
+                    self.w2 += self.learning_rate * (target - guess) * x.1;
+
+                    // Update bias 
+                    self.bias += self.learning_rate * (target - guess);
+                    has_updated = true
+                }
+            }
+
+            if !has_updated{
+                break;
+            }
+        }
+    }
+
+    pub fn fit_until_halt_with_logging(&mut self, x_train: &Vec<(f64, f64)>, y_train: &Vec<f64>) {
+        // Forever loop
+        let mut epochs_count = 0;
+        loop{
+            // Increment the epochs count
+            epochs_count += 1;
+
+            // Iterate over the dataset and recalculate the 
+            let mut correct_predictions = 0;
+            let mut has_updated = false; 
+            for (x, y) in x_train.iter().zip(y_train.iter()){
+                let target = *y;
+                let guess = self.predict(x) as f64;
+
+                // Check if we need to update the weights
+                if target != guess{
+                    // Update weights
+                    self.w1 += self.learning_rate * (target - guess) * x.0;
+                    self.w2 += self.learning_rate * (target - guess) * x.1;
+
+                    // Update bias 
+                    self.bias += self.learning_rate * (target - guess);
+
+                    has_updated = true;
+                }else{
+                    correct_predictions += 1;
+                }
+
+            }
+
+            // Calculate the percentage
+            let accuracy = if x_train.len() > 0 {
+                (correct_predictions as f64 / x_train.len() as f64) * 100.0
+            } else {
+                0.0 
+            };
+
+            println!("Epoch {}: {}% accuracy", epochs_count,accuracy);
+
+            if !has_updated{
+                break;
+            }
+        }
+    }
+
+    /// Get a prediction on the given features.
+    /// 
+    /// It uses a Heaviside step function as the activation function. 
+    /// Takes the weights dot product the features, and add the bias before using the activation function.
+    /// 
+    /// Arguments:
+    /// 
+    /// - `features`: two features as a tuple.
+    /// 
+    /// Returns:
+    /// 
+    /// Either 0 or 1, representing a prediction of a class. 
     pub fn predict(&self, features: &(f64, f64)) -> usize {
         // Return the output of the prediction
         // Using the Heaviside step function to get the value as 0 or 1
         h_step(self.bias + self.w1 * features.0 + self.w2 * features.1)
     }
 
+    /// Calculates the accuracy of predictions made by a model based on input data and
+    /// target values.
+    /// 
+    /// Arguments:
+    /// 
+    /// - `x_data`: a vector of tuples where each tuple contains the two features, that we want to measure accuracy on.
+    /// - `t_data`: a vector of labeled data, that are correct for the given data. These target values are
+    /// used to compare against the predictions made by the model to determine the accuracy of the
+    /// model's predictions.
+    /// 
+    /// Returns:
+    /// 
+    /// The accuracy as percentage as a f64
     pub fn calculate_accuracy(&self, x_data: &Vec<(f64, f64)>, t_data: &Vec<f64>) -> f64{
         let mut correct_predictions = 0;
         for (i, features) in x_data.iter().enumerate() {
@@ -162,5 +272,16 @@ impl Perceptron {
 
         // Return the accuracy 
         accuracy
+    }
+
+    /// Print the parameters of the model.
+    pub fn print_model(&self){
+        println!("         |Perceptron");
+        println!("----------------------------------------");
+        println!("   Bias  | {}", self.bias);
+        println!("----------------------------------------");
+        println!("    W1   | {}", self.w1);
+        println!("----------------------------------------");
+        println!("    W2   | {}", self.w2);
     }
 }

@@ -38,12 +38,29 @@
 
     \subsection{Why do we need a bias?}
 
-
+    The bias is important to improve the flexibility of the model. 
+    Without a bias, the model will always go through origin. 
+    When we introduce a bias, it allows the model to pass thought the x-axis at different points. 
+    
 
     \subsection{Training}
 
-    
+    \begin{enumerate}
+        \item Initialize weights.
+        \item Loop over each training instance until some criteria is met.
+        \item Calculate the output of the training instance, $y$.
+        \item Compare the target value, $t$ to the output $y$.
+        \item If $t = y$, then continue. If not, we need to change all the weights. 
+        \begin{enumerate}
+            \item If $t=0, y = 1$, we need increase the weights: $w_i = w_i + \eta(t-y)x_i$
+            \item If $t=1, y = 0$, we need to decrease the weight: $w_i = w_i - \eta(y-t)x_i$
+        \end{enumerate}
+    \end{enumerate}
 
 
+    \subsection{Perceptron Convergence Theorem}
+
+    If the dataset is linearly separable, then the perceptron will eventually find a solution for the binary classification.
+    Unless the training rate $\eta$ is to high. It is important to note that there could be more than one solution. 
 
 \end{document}

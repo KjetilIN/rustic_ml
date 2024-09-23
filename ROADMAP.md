@@ -11,8 +11,8 @@ In this phase the knowledge of Machine Learning and Rust is low. Therefor learni
 
 - [x] `Matrix` implementation ([#6](https://github.com/KjetilIN/rustic_ml/issues/6))
 - [ ] `Dataframe` implementation ([#21](https://github.com/KjetilIN/rustic_ml/issues/21))
-- [ ] Complete course on ML.
-    - See my repository for Python: https://github.com/KjetilIN/ML_Notes 
+- [x] `Perceptron` implementation ([#32](https://github.com/KjetilIN/rustic_ml/issues/32))
+  - [x] Add example of usage in ./examples/
 - [ ] Linear regression model 
     - [ ] Add example of usage in `./examples/`
 

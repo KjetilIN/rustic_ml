@@ -2,8 +2,9 @@
 use rustic_ml::perceptron::Perceptron;
 
 fn main() {
-    // Lets image we have the following data: 
+    // Lets imagine we have the following data: 
     //
+    // ________________________________________________
     // | Movie # | Alice    | Bob       | Profitable? |
     // |_________|__________|___________|_____________|
     // |  1      | 1        | 1         |      no     |

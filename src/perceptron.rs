@@ -93,6 +93,19 @@ impl Perceptron {
         self
     }
 
+    /// Iterates over the dataset for a specified number of epochs, updating weights and bias based on the prediction error.
+    /// 
+    /// Arguments:
+    /// 
+    /// - `x_train`: The `x_train` parameter is a reference to a vector of tuples, where each tuple
+    /// contains two `f64` values. These tuples represent the input features for the training data.
+    /// - `y_train`: The `y_train` parameter in the `fit` function represents the target values
+    /// corresponding to the input data points in `x_train`. These target values are used to train the
+    /// model by comparing them with the predictions made by the model during each epoch of training.
+    /// - `epochs`: The `epochs` parameter in the `fit` function represents the number of times the
+    /// model will iterate over the entire dataset during the training process. Each epoch consists of
+    /// one pass through the entire dataset. Increasing the number of epochs can potentially improve the
+    /// model's performance by allowing it to learn from the data
     pub fn fit(&mut self, x_train: &Vec<(f64, f64)>, y_train: &Vec<f64>, epochs: usize) {
         // For each epoch
         for _ in 0..epochs{
@@ -115,6 +128,18 @@ impl Perceptron {
         }
     }
 
+    /// Iterates over a dataset for a specified number of epochs, updating weights and bias based on predictions and targets, and outputs the accuracy
+    /// percentage for each epoch.
+    /// 
+    /// Arguments:
+    /// 
+    /// - `x_train`: The `x_train` parameter is a reference to a vector of tuples, where each tuple
+    /// contains two `f64` values. These tuples represent the input data points for training the model.
+    /// - `y_train`: The `y_train` parameter in the `fit_with_logging` function represents the target
+    /// values corresponding to the input data points in `x_train`. These target values are used to
+    /// train the model by comparing them with the predictions made by the model during each epoch.
+    /// - `epochs`: The `epochs` parameter in the `fit_with_logging` function represents the number of
+    /// times the model will iterate over the entire dataset during the training process. 
     pub fn fit_with_logging(&mut self, x_train: &Vec<(f64, f64)>, y_train: &Vec<f64>, epochs: usize) {
         // For each epoch
         for epoch in 0..epochs{
@@ -149,6 +174,19 @@ impl Perceptron {
         }
     }
 
+    /// Infinitely loop over the dataset and updates weights and bias until
+    /// convergence based on the provided training data.
+    /// 
+    /// Arguments:
+    /// 
+    /// - `x_train`: The `x_train` parameter in the `fit_until_halt` function represents the input
+    /// features of the training dataset. It is a vector of tuples where each tuple contains two
+    /// elements representing the features of a single data point. The first element of the tuple is the
+    /// value of the first feature, and
+    /// - `y_train`: The `y_train` parameter in the `fit_until_halt` function represents the target
+    /// values corresponding to the input data points in `x_train`. These target values are used to
+    /// train the model by comparing them with the predictions made by the model during each iteration
+    /// of the training process.
     pub fn fit_until_halt(&mut self, x_train: &Vec<(f64, f64)>, y_train: &Vec<f64>) {
         // Loop forever
         loop{
@@ -178,6 +216,18 @@ impl Perceptron {
         }
     }
 
+    /// Infinitely loop over the dataset and updates weights and bias until
+    /// convergence based on the provided training data, with logging of accuracy per epoch.
+    /// 
+    /// Arguments:
+    /// 
+    /// - `x_train`: The `x_train` parameter in the provided function `fit_until_halt_with_logging` is a
+    /// reference to a vector of tuples. Each tuple contains two elements of type `f64`. These tuples
+    /// represent the input features for training the model.
+    /// - `y_train`: The `y_train` parameter in the provided function `fit_until_halt_with_logging`
+    /// represents the target values corresponding to the input data points in `x_train`. These target
+    /// values are used to train the model by comparing them with the predictions made by the model
+    /// during each iteration.
     pub fn fit_until_halt_with_logging(&mut self, x_train: &Vec<(f64, f64)>, y_train: &Vec<f64>) {
         // Forever loop
         let mut epochs_count = 0;
@@ -274,7 +324,18 @@ impl Perceptron {
         accuracy
     }
 
-    /// Print the parameters of the model.
+    /// Print the parameters of the model in the terminal.
+    /// 
+    /// Output in the following table format: 
+    /// ```text
+    ///          |Perceptron
+    ///    ----------------------------------------
+    ///    Bias  | <BIAS>
+    ///    ----------------------------------------
+    ///     W1   | <WEIGHT-1>
+    ///    ----------------------------------------
+    ///     W2   | <WEIGHT-2>
+    /// ``````
     pub fn print_model(&self){
         println!("         |Perceptron");
         println!("----------------------------------------");

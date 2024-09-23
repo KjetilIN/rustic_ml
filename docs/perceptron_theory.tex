@@ -41,21 +41,37 @@
     The bias is important to improve the flexibility of the model. 
     Without a bias, the model will always go through origin. 
     When we introduce a bias, it allows the model to pass thought the x-axis at different points. 
+
+    \newpage
     
 
     \subsection{Training}
 
+    For the perceptron model: $f(x) = b + x_1w_1 + x_2w_2$, where $b$ is the bias term.
+
     \begin{enumerate}
-        \item Initialize weights.
-        \item Loop over each training instance until some criteria is met.
-        \item Calculate the output of the training instance, $y$.
-        \item Compare the target value, $t$ to the output $y$.
-        \item If $t = y$, then continue. If not, we need to change all the weights. 
+        \item Initialize the weights $w_i$ and the bias $b$ (usually to small random values or zeros).
+        \item Loop over each training instance until some stopping criteria are met (e.g., all examples are classified correctly or maximum iterations are reached).
+        \item For each instance, calculate the output: 
+        \[
+        y = \sigma(b + x_1w_1 + x_2w_2), \newline
+        y \in [0, 1]
+        \]
+        \item Compare the target value, $t$, to the predicted output $y$.
+        \item If $t = y$, continue to the next instance. If not, update the weights and bias:
         \begin{enumerate}
-            \item If $t=0, y = 1$, we need increase the weights: $w_i = w_i + \eta(t-y)x_i$
-            \item If $t=1, y = 0$, we need to decrease the weight: $w_i = w_i - \eta(y-t)x_i$
+            \item For each weight: 
+            \[
+            w_i = w_i + \eta(t - y)x_i
+            \]
+            \item Update the bias term:
+            \[
+            b = b + \eta(t - y)
+            \]
+            where $\eta$ is the learning rate.
         \end{enumerate}
     \end{enumerate}
+
 
 
     \subsection{Perceptron Convergence Theorem}

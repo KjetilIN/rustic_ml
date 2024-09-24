@@ -2,7 +2,7 @@
 mod tests {
     use std::{ops::RangeInclusive, vec};
 
-    use rustic_ml::matrix::{Matrix, MatrixError};
+    use rustic_ml::data_utils::matrix::{Matrix, MatrixError};
 
     #[test]
     fn test_new_matrix_constructor() {

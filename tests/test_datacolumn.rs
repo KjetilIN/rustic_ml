@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod tests {
-    use rustic_ml::data_utils::datacolumn::DataColumn;
+    use rustic_ml::data_utils::datacolumn::{DataColumn, DataColumnTrait};
 
     #[test]
     fn test_new() {

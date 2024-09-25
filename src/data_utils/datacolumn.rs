@@ -1,4 +1,26 @@
-use std::{any::type_name, slice::Iter};
+use std::{any::{type_name, Any}, slice::Iter};
+
+// Define a trait for DataColumn
+pub trait DataColumnTrait {
+    type Item; // Associated type to represent the type of data (T)
+
+    fn new(data: Vec<Option<Self::Item>>) -> Self
+    where
+        Self: Sized;
+    fn as_any(&self) -> &dyn Any;
+    fn get(&self, index: usize) -> Option<&Self::Item>;
+    fn size(&self) -> usize;
+    fn none_count(&self) -> usize;
+    fn some_count(&self) -> usize;
+    fn set(&mut self, index: usize, item: Self::Item);
+    fn remove(&mut self, index: usize);
+    fn append(&mut self, item: Self::Item);
+    fn reset(&mut self);
+    fn reset_default(&mut self)
+    where
+        Self::Item: Default;
+    fn iter_column(&self) -> Iter<Option<Self::Item>>;
+}
 
 #[allow(dead_code)]
 pub struct DataColumn<T> {
@@ -6,58 +28,64 @@ pub struct DataColumn<T> {
     pub data_type: &'static str,
 }
 
-impl<T: Default> DataColumn<T> {
-    pub fn new(data: Vec<Option<T>>) -> Self {
+impl<T: 'static + Default> DataColumnTrait for DataColumn<T> {
+    type Item = T;
+
+    fn new(data: Vec<Option<T>>) -> Self {
         Self {
             data,
             data_type: type_name::<T>(),
         }
     }
 
-    pub fn get(&self, index: usize) -> Option<&T> {
+    fn as_any(&self) -> &dyn Any {
+        self
+    }
+
+    fn get(&self, index: usize) -> Option<&T> {
         if index >= self.data.len() {
             return None;
         }
         self.data[index].as_ref()
     }
 
-    pub fn size(&self) -> usize {
+    fn size(&self) -> usize {
         self.data.len()
     }
 
-    pub fn none_count(&self) -> usize {
+    fn none_count(&self) -> usize {
         self.data.len() - self.data.iter().flatten().count()
     }
 
-    pub fn some_count(&self) -> usize {
+    fn some_count(&self) -> usize {
         self.data.iter().flatten().count()
     }
 
-    pub fn set(&mut self, index: usize, item: T) {
+    fn set(&mut self, index: usize, item: T) {
         if index < self.data.len() {
             self.data[index] = Some(item);
         }
     }
 
-    pub fn remove(&mut self, index: usize) {
+    fn remove(&mut self, index: usize) {
         if index < self.data.len() {
             self.data[index] = None;
         }
     }
 
-    pub fn append(&mut self, item: T) {
+    fn append(&mut self, item: T) {
         self.data.push(Some(item));
     }
 
-    pub fn reset(&mut self) {
+    fn reset(&mut self) {
         self.data = (0..self.data.len()).map(|_| None).collect();
     }
 
-    pub fn reset_default(&mut self) {
+    fn reset_default(&mut self) {
         self.data = (0..self.data.len()).map(|_| Some(T::default())).collect();
     }
 
-    pub fn iter_column(&self) -> Iter<Option<T>> {
+    fn iter_column(&self) -> Iter<Option<T>> {
         self.data.iter()
     }
 }

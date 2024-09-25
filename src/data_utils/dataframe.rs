@@ -1,9 +1,10 @@
-use std::collections::HashMap;
+use std::any::Any;
+
+use super::datacolumn::DataColumnTrait;
+
 
 pub struct Dataframe {
-    pub data: HashMap<String, Vec<String>>,
-    pub rows: usize,
-    pub cols: usize,
+    columns: Vec<Box<dyn DataColumnTrait<Item = dyn Any>>>,
 }
 
 impl Dataframe {

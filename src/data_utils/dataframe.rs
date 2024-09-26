@@ -38,20 +38,44 @@ pub enum DataColumnEnum {
 
 /// `Dataframe` that represents a collection of columns of different data types.
 ///
-/// Properties:
-///
-/// - `columns`: The `Dataframe` struct has a property `columns` which is a vector of `DataColumnEnum`
-/// elements.
+/// Used for managing data in an efficient way.
 #[allow(dead_code)]
 pub struct Dataframe {
     columns: Vec<DataColumnEnum>,
+    rows_count: u32,
 }
 
 impl Dataframe {
+    /// Reads data from a CSV file using a semicolon as the delimiter, and creates a `Dataframe`
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use rustic_ml::data_utils::dataframe::Dataframe;
+    ///
+    /// let path = String::from("./datasets/european_cities.csv");
+    /// let dataframe = Dataframe::from_csv(path).unwrap();
+    /// ```
+    ///
+    /// # Arguments:
+    ///
+    /// - `path`: The `path` parameter is a `String` that represents the file path to a CSV file that
+    /// you want to read from.
+    ///
+    /// # Errors:
+    /// - When file is not found, path was not correct
+    ///
+    /// # Returns:
+    ///
+    /// The `from_csv` function is returning a `Result` containing either an instance of the struct it
+    /// belongs to (represented by `Self`) or an empty tuple `()`.
     pub fn from_csv(path: String) -> Result<Self, ()> {
         Self::from_file(path, ';')
     }
 
+    /// Get the `ColumnType` of a given list of data.
+    ///
+    /// Will check the whole column, and determine its data based on what it was able to cast to.
     fn infer_column_type(column_data: &[String]) -> ColumnType {
         let mut is_integer = true;
         let mut is_float = true;
@@ -92,6 +116,30 @@ impl Dataframe {
         }
     }
 
+    /// Reads data from a  file using the given delimiter, and creates a `Dataframe`
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use rustic_ml::data_utils::dataframe::Dataframe;
+    ///
+    /// let path = String::from("./datasets/european_cities.txt");
+    /// let dataframe = Dataframe::from_file(path, ' ').unwrap();
+    /// ```
+    ///
+    /// # Arguments:
+    ///
+    /// - `path`: The `path` parameter is a `String` that represents the file path to a CSV file that
+    /// you want to read from.
+    /// - 'delimiter': The delimiter that septate records
+    ///
+    /// # Errors:
+    /// - When file is not found, path was not correct
+    ///
+    /// # Returns:
+    ///
+    /// The `from_csv` function is returning a `Result` containing either an instance of the struct it
+    /// belongs to (represented by `Self`) or an empty tuple `()`.    
     pub fn from_file(path: String, delimiter: char) -> Result<Self, ()> {
         // Read the file
         let contents = match fs::read_to_string(&path) {
@@ -200,6 +248,7 @@ impl Dataframe {
 
         Ok(Dataframe {
             columns: dataframe_columns,
+            rows_count: contents.lines().count() as u32,
         })
     }
 
@@ -217,6 +266,11 @@ impl Dataframe {
         unimplemented!()
     }
 
+    pub fn name_column(&mut self, index: usize, column_name: &str) {}
+
+    /// Print the first 5 rows of the dataframe.
+    ///
+    /// If the dataframe has less then 5 rows, then it prints the whole dataframe
     pub fn head(&self) {
         unimplemented!()
     }
@@ -225,6 +279,14 @@ impl Dataframe {
         unimplemented!()
     }
 
+    /// Prints information about columns in the `Dataframe`
+    ///
+    /// Print information about each column. For each column it prints the following information:
+    /// - column name
+    /// - type
+    /// - counts of None
+    /// - count of Some values
+    /// - Total length of rows.
     pub fn info(&self) {
         // Print table headers
         println!(
@@ -323,11 +385,71 @@ impl Dataframe {
         total_memory
     }
 
-    pub fn is_empty(&self) -> bool {
+    /// Check if the `Dataframe` has rows.
+    ///
+    /// Returns true if there are rows, that could be None, rows.
+    pub fn has_rows(&self) -> bool {
         unimplemented!()
     }
 
-    pub fn drop_column(&self) {
+    pub fn has_records() {
+        unimplemented!()
+    }
+
+    /// Check if the `Dataframe` has columns defined.
+    ///
+    /// Returns true if there is at least one `DataColumn`
+    pub fn has_columns(&self) -> bool {
+        self.columns.len() > 0
+    }
+
+    /// Check if a column with given column name exists in the `Dataframe`
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use rustic_ml::data_utils::dataframe::Dataframe;
+    ///
+    /// let path = String::from("./datasets/european_cities.csv");
+    /// let dataframe = Dataframe::from_csv(path).unwrap();
+    ///
+    /// assert!(dataframe.has_column("Barcelona"));
+    /// assert!(!dataframe.has_column("Oslo"));
+    /// ```
+    ///
+    /// # Returns
+    ///
+    /// True if there is a column that has the given column name
+    pub fn has_column(&self, column_name: &str) -> bool {
+        self.columns.iter().any(|col| match col {
+            DataColumnEnum::IntColumn(int_col) => int_col.name == column_name,
+            DataColumnEnum::FloatColumn(float_col) => float_col.name == column_name,
+            DataColumnEnum::BoolColumn(bool_col) => bool_col.name == column_name,
+            DataColumnEnum::TextColumn(text_col) => text_col.name == column_name,
+        })
+    }
+
+    /// Drop the column with the given column name
+    ///
+    /// Method is not verbose, and therefor assume that the column was removed, or that it never existed.
+    pub fn drop_column(&mut self, column_name: String) {
+        self.columns.retain(|col| match col {
+            DataColumnEnum::IntColumn(int_col) => int_col.name != column_name,
+            DataColumnEnum::FloatColumn(float_col) => float_col.name != column_name,
+            DataColumnEnum::BoolColumn(bool_col) => bool_col.name != column_name,
+            DataColumnEnum::TextColumn(text_col) => text_col.name != column_name,
+        })
+    }
+
+    pub fn add_column(&self) {
+        unimplemented!()
+    }
+
+    pub fn add_record(&self) {
+        unimplemented!()
+    }
+
+    pub fn get_float_feature(&self, column_name: String) -> Option<Vec<f32>> {
         unimplemented!()
     }
 

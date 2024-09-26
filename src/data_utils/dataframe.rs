@@ -248,8 +248,42 @@ impl Dataframe {
         }
     }
 
-    pub fn memory_usage(&self) {
-        unimplemented!()
+    pub fn memory_usage(&self) -> usize {
+        let mut total_memory: usize = 0;
+
+        for column in &self.columns {
+            let column_memory = match column {
+                DataColumnEnum::IntColumn(col) => {
+                    let memory = col.size() * (size_of::<Option<i32>>());
+                    memory
+                }
+                DataColumnEnum::FloatColumn(col) => {
+                    let memory = col.size() * (size_of::<Option<f64>>());
+                    memory
+                }
+                DataColumnEnum::BoolColumn(col) => {
+                    let memory = col.size() * (size_of::<Option<bool>>());
+                    memory
+                }
+                DataColumnEnum::TextColumn(col) => {
+                    let memory: usize = col
+                        .iter_column()
+                        .map(|opt| {
+                            match opt {
+                                Some(s) => size_of::<Option<String>>() + s.capacity(), // size of the string's heap allocation
+                                None => size_of::<Option<String>>(), // just the size of the Option
+                            }
+                        })
+                        .sum();
+                    println!("{:<15} {:<15}", col.name, memory);
+                    memory
+                }
+            };
+
+            total_memory += column_memory;
+        }
+
+        total_memory
     }
 
     pub fn is_empty(&self) -> bool {

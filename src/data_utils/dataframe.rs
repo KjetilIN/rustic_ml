@@ -1,25 +1,47 @@
+use super::datacolumn::DataColumnTrait;
+use crate::data_utils::datacolumn::DataColumn;
 use std::fs;
 
-use crate::data_utils::datacolumn::DataColumn;
-
-use super::datacolumn::DataColumnTrait;
-
-enum ColumnType {
+/// A  enumeration type that represents different types of columns that can be present in a dataset.
+///
+/// The variants of this enum are `Integer`, `Float`, `Boolean`, and
+/// `Text`, which correspond to the possible data types that a column can have. This enum is used in the
+/// `Dataframe` struct to infer the type of data present in each column when reading data from a file.
+pub enum ColumnType {
     Integer,
     Float,
     Boolean,
     Text,
 }
 
-// Enum to represent different types of DataColumn
+/// `DataColumnEnum` enum is used to represent different types of `DataColumn` instances.
+///
+/// Each variant of the enum corresponds to a specific type of data column
+/// - `IntColumn` for columns containing integer data.
+/// - `FloatColumn` for columns containing floating-point data.
+/// - `BoolColumn` for columns containing boolean data.
+/// - `TextColumn` for columns containing text data.
 #[allow(dead_code)]
-enum DataColumnEnum {
+pub enum DataColumnEnum {
+    /// Data column with i32 values
     IntColumn(DataColumn<i32>),
-    FloatColumn(DataColumn<f64>),
+
+    /// Data column with f32 values
+    FloatColumn(DataColumn<f32>),
+
+    /// Data column with boolean values
     BoolColumn(DataColumn<bool>),
+
+    /// Data column with string values
     TextColumn(DataColumn<String>),
 }
 
+/// `Dataframe` that represents a collection of columns of different data types.
+///
+/// Properties:
+///
+/// - `columns`: The `Dataframe` struct has a property `columns` which is a vector of `DataColumnEnum`
+/// elements.
 #[allow(dead_code)]
 pub struct Dataframe {
     columns: Vec<DataColumnEnum>,
@@ -44,7 +66,7 @@ impl Dataframe {
                 is_integer = false;
             }
 
-            if is_float && value.parse::<f64>().is_err() {
+            if is_float && value.parse::<f32>().is_err() {
                 is_float = false;
             }
 
@@ -128,12 +150,12 @@ impl Dataframe {
                     dataframe_columns.push(DataColumnEnum::IntColumn(new_column));
                 }
                 ColumnType::Float => {
-                    let data_vec: Vec<Option<f64>> = csv_lines
+                    let data_vec: Vec<Option<f32>> = csv_lines
                         .iter()
                         .skip(1)
                         .map(|line| {
                             let value = line.split(delimiter).collect::<Vec<_>>()[index];
-                            match value.parse::<f64>() {
+                            match value.parse::<f32>() {
                                 Ok(parsed_val) => Some(parsed_val),
                                 Err(_) => None, // Handle non-float values as None
                             }
@@ -182,6 +204,16 @@ impl Dataframe {
     }
 
     pub fn to_csv(&self, path: String) -> Result<(), ()> {
+        unimplemented!()
+    }
+
+    pub fn print(&self) {
+        self.head();
+        println!("............");
+        self.tail();
+    }
+
+    fn print_full_table(&self) {
         unimplemented!()
     }
 
@@ -248,6 +280,11 @@ impl Dataframe {
         }
     }
 
+    /// Calculate the total memory used for the `Dataframe`
+    ///
+    /// Returns:
+    ///
+    /// The total memory usage of all columns in the `Dataframe` in bytes.
     pub fn memory_usage(&self) -> usize {
         let mut total_memory: usize = 0;
 
@@ -258,7 +295,7 @@ impl Dataframe {
                     memory
                 }
                 DataColumnEnum::FloatColumn(col) => {
-                    let memory = col.size() * (size_of::<Option<f64>>());
+                    let memory = col.size() * (size_of::<Option<f32>>());
                     memory
                 }
                 DataColumnEnum::BoolColumn(col) => {
@@ -290,7 +327,9 @@ impl Dataframe {
         unimplemented!()
     }
 
-    pub fn drop_column(&self) {}
+    pub fn drop_column(&self) {
+        unimplemented!()
+    }
 
     pub fn at(&self) {
         unimplemented!()

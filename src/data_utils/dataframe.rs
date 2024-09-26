@@ -1,4 +1,4 @@
-use std::{any::Any, fs};
+use std::fs;
 
 use crate::data_utils::datacolumn::DataColumn;
 
@@ -14,10 +14,10 @@ enum ColumnType {
 // Enum to represent different types of DataColumn
 #[allow(dead_code)]
 enum DataColumnEnum {
-    IntColumn(Box<DataColumn<i32>>),
-    FloatColumn(Box<DataColumn<f64>>),
-    BoolColumn(Box<DataColumn<bool>>),
-    TextColumn(Box<DataColumn<String>>),
+    IntColumn(DataColumn<i32>),
+    FloatColumn(DataColumn<f64>),
+    BoolColumn(DataColumn<bool>),
+    TextColumn(DataColumn<String>),
 }
 
 #[allow(dead_code)]
@@ -27,113 +27,7 @@ pub struct Dataframe {
 
 impl Dataframe {
     pub fn from_csv(path: String) -> Result<Self, ()> {
-        // Read the file
-        let contents = match fs::read_to_string(&path) {
-            Ok(val) => val,
-            Err(_) => {
-                println!("ERROR: could not read csv file: {}", path);
-                return Err(());
-            }
-        };
-
-        // Collect to a vector of lines
-        let csv_lines: Vec<_> = contents.lines().collect();
-
-        // Count how many columns there are
-        let column_count: usize = csv_lines[0].split(";").count();
-
-        // Column names for the dataset
-        let column_names: Vec<_> = csv_lines[0].split(";").collect();
-
-        // Get the data types for each column and initialize each column
-        let columns_with_data: Vec<_> = csv_lines[1].split(";").collect();
-
-        // Create the vector of column data
-        let mut dataframe_columns: Vec<DataColumnEnum> = Vec::with_capacity(column_count);
-
-        for (index, _) in columns_with_data.iter().enumerate() {
-            // Gather all data in this column as a vector of items
-            let column_data: Vec<_> = csv_lines
-                .iter()
-                .skip(1)
-                .map(|line| {
-                    let values = line.split(";").collect::<Vec<_>>();
-                    values[index].trim().to_string() // Trim the value
-                })
-                .collect();
-
-            // Get the column type
-            let column_type = Self::infer_column_type(&column_data);
-
-            match column_type {
-                ColumnType::Integer => {
-                    // Collect all data for the given column
-                    let data_vec: Vec<Option<i32>> = csv_lines
-                        .iter()
-                        .skip(1)
-                        .map(|line| {
-                            let value = line.split(";").collect::<Vec<_>>()[index];
-                            match value.parse::<i32>() {
-                                Ok(parsed_val) => Some(parsed_val),
-                                Err(_) => None, // Handle non-integer values as None
-                            }
-                        })
-                        .collect();
-
-                    let new_column = DataColumn::new(data_vec, column_names[index].to_owned());
-                    dataframe_columns.push(DataColumnEnum::IntColumn(Box::new(new_column)));
-                }
-                ColumnType::Float => {
-                    let data_vec: Vec<Option<f64>> = csv_lines
-                        .iter()
-                        .skip(1)
-                        .map(|line| {
-                            let value = line.split(";").collect::<Vec<_>>()[index];
-                            match value.parse::<f64>() {
-                                Ok(parsed_val) => Some(parsed_val),
-                                Err(_) => None, // Handle non-float values as None
-                            }
-                        })
-                        .collect();
-
-                    let new_column = DataColumn::new(data_vec, column_names[index].to_owned());
-                    dataframe_columns.push(DataColumnEnum::FloatColumn(Box::new(new_column)));
-                }
-                ColumnType::Boolean => {
-                    let data_vec: Vec<Option<bool>> = csv_lines
-                        .iter()
-                        .skip(1)
-                        .map(|line| {
-                            let value = line.split(";").collect::<Vec<_>>()[index];
-                            match value.parse::<bool>() {
-                                Ok(parsed_val) => Some(parsed_val),
-                                Err(_) => None, // Handle non-boolean values as None
-                            }
-                        })
-                        .collect();
-
-                    let new_column = DataColumn::new(data_vec, column_names[index].to_owned());
-                    dataframe_columns.push(DataColumnEnum::BoolColumn(Box::new(new_column)));
-                }
-                ColumnType::Text => {
-                    let data_vec: Vec<Option<String>> = csv_lines
-                        .iter()
-                        .skip(1)
-                        .map(|line| {
-                            let value = line.split(";").collect::<Vec<_>>()[index].to_string();
-                            Some(value)
-                        })
-                        .collect();
-
-                    let new_column = DataColumn::new(data_vec, column_names[index].to_owned());
-                    dataframe_columns.push(DataColumnEnum::TextColumn(Box::new(new_column)));
-                }
-            }
-        }
-
-        Ok(Dataframe {
-            columns: dataframe_columns,
-        })
+        Self::from_file(path, ';')
     }
 
     fn infer_column_type(column_data: &[String]) -> ColumnType {
@@ -177,7 +71,114 @@ impl Dataframe {
     }
 
     pub fn from_file(path: String, delimiter: char) -> Result<Self, ()> {
-        unimplemented!()
+        // Read the file
+        let contents = match fs::read_to_string(&path) {
+            Ok(val) => val,
+            Err(_) => {
+                println!("ERROR: could not read csv file: {}", path);
+                return Err(());
+            }
+        };
+
+        // Collect to a vector of lines
+        let csv_lines: Vec<_> = contents.lines().collect();
+
+        // Count how many columns there are
+        let column_count: usize = csv_lines[0].split(delimiter).count();
+
+        // Column names for the dataset
+        let column_names: Vec<_> = csv_lines[0].split(delimiter).collect();
+
+        // Get the data types for each column and initialize each column
+        let columns_with_data: Vec<_> = csv_lines[1].split(delimiter).collect();
+
+        // Create the vector of column data
+        let mut dataframe_columns: Vec<DataColumnEnum> = Vec::with_capacity(column_count);
+
+        for (index, _) in columns_with_data.iter().enumerate() {
+            // Gather all data in this column as a vector of items
+            let column_data: Vec<_> = csv_lines
+                .iter()
+                .skip(1)
+                .map(|line| {
+                    let values = line.split(delimiter).collect::<Vec<_>>();
+                    values[index].trim().to_string() // Trim the value
+                })
+                .collect();
+
+            // Get the column type
+            let column_type = Self::infer_column_type(&column_data);
+
+            match column_type {
+                ColumnType::Integer => {
+                    // Collect all data for the given column
+                    let data_vec: Vec<Option<i32>> = csv_lines
+                        .iter()
+                        .skip(1)
+                        .map(|line| {
+                            let value = line.split(delimiter).collect::<Vec<_>>()[index];
+                            match value.parse::<i32>() {
+                                Ok(parsed_val) => Some(parsed_val),
+                                Err(_) => None, // Handle non-integer values as None
+                            }
+                        })
+                        .collect();
+
+                    let new_column = DataColumn::new(data_vec, column_names[index].to_owned());
+                    dataframe_columns.push(DataColumnEnum::IntColumn(new_column));
+                }
+                ColumnType::Float => {
+                    let data_vec: Vec<Option<f64>> = csv_lines
+                        .iter()
+                        .skip(1)
+                        .map(|line| {
+                            let value = line.split(delimiter).collect::<Vec<_>>()[index];
+                            match value.parse::<f64>() {
+                                Ok(parsed_val) => Some(parsed_val),
+                                Err(_) => None, // Handle non-float values as None
+                            }
+                        })
+                        .collect();
+
+                    let new_column = DataColumn::new(data_vec, column_names[index].to_owned());
+                    dataframe_columns.push(DataColumnEnum::FloatColumn(new_column));
+                }
+                ColumnType::Boolean => {
+                    let data_vec: Vec<Option<bool>> = csv_lines
+                        .iter()
+                        .skip(1)
+                        .map(|line| {
+                            let value = line.split(delimiter).collect::<Vec<_>>()[index];
+                            match value.parse::<bool>() {
+                                Ok(parsed_val) => Some(parsed_val),
+                                Err(_) => None, // Handle non-boolean values as None
+                            }
+                        })
+                        .collect();
+
+                    let new_column = DataColumn::new(data_vec, column_names[index].to_owned());
+                    dataframe_columns.push(DataColumnEnum::BoolColumn(new_column));
+                }
+                ColumnType::Text => {
+                    let data_vec: Vec<Option<String>> = csv_lines
+                        .iter()
+                        .skip(1)
+                        .map(|line| {
+                            let value =
+                                line.split(delimiter).collect::<Vec<_>>()[index].to_string();
+                            Some(value)
+                        })
+                        .collect();
+
+                    let new_column = DataColumn::new(data_vec, column_names[index].to_owned());
+                    dataframe_columns.push(DataColumnEnum::TextColumn(new_column));
+                }
+            }
+        }
+
+        Ok(Dataframe {
+            columns: dataframe_columns,
+        })
     }
 
     pub fn to_csv(&self, path: String) -> Result<(), ()> {

@@ -4,12 +4,11 @@ use crate::data_utils::datacolumn::DataColumn;
 
 use super::datacolumn::DataColumnTrait;
 
-
-enum ColumnType{
+enum ColumnType {
     Integer,
     Float,
     Boolean,
-    Text
+    Text,
 }
 
 // Enum to represent different types of DataColumn
@@ -21,7 +20,6 @@ enum DataColumnEnum {
     TextColumn(Box<DataColumn<String>>),
 }
 
-
 #[allow(dead_code)]
 pub struct Dataframe {
     columns: Vec<DataColumnEnum>,
@@ -29,6 +27,7 @@ pub struct Dataframe {
 
 impl Dataframe {
     pub fn from_csv(path: String) -> Result<Self, ()> {
+        // Read the file
         let contents = match fs::read_to_string(&path) {
             Ok(val) => val,
             Err(_) => {
@@ -42,40 +41,91 @@ impl Dataframe {
 
         // Count how many columns there are
         let column_count: usize = csv_lines[0].split(";").count();
-        println!("[INFO] {} columns in the dataset", column_count);
+
+        // Column names for the dataset
+        let column_names: Vec<_> = csv_lines[0].split(";").collect();
 
         // Get the data types for each column and initialize each column
-        let columns_with_data = csv_lines[1].split(";").collect::<Vec<_>>();
+        let columns_with_data: Vec<_> = csv_lines[1].split(";").collect();
 
         // Create the vector of column data
         let mut dataframe_columns: Vec<DataColumnEnum> = Vec::with_capacity(column_count);
 
-        for column in columns_with_data {
-            let column_type = Self::infer_column_type(column);
+        for (index, _) in columns_with_data.iter().enumerate() {
+            // Gather all data in this column as a vector of items
+            let column_data: Vec<_> = csv_lines
+                .iter()
+                .skip(1)
+                .map(|line| {
+                    let values = line.split(";").collect::<Vec<_>>();
+                    values[index].trim().to_string() // Trim the value
+                })
+                .collect();
+
+            // Get the column type
+            let column_type = Self::infer_column_type(&column_data);
 
             match column_type {
                 ColumnType::Integer => {
-                    let data: i32 = column.parse().expect("parse integer data");
-                    let data_vec: Vec<Option<i32>> = vec![Some(data)];
-                    let new_column = DataColumn::new(data_vec);
+                    // Collect all data for the given column
+                    let data_vec: Vec<Option<i32>> = csv_lines
+                        .iter()
+                        .skip(1)
+                        .map(|line| {
+                            let value = line.split(";").collect::<Vec<_>>()[index];
+                            match value.parse::<i32>() {
+                                Ok(parsed_val) => Some(parsed_val),
+                                Err(_) => None, // Handle non-integer values as None
+                            }
+                        })
+                        .collect();
+
+                    let new_column = DataColumn::new(data_vec, column_names[index].to_owned());
                     dataframe_columns.push(DataColumnEnum::IntColumn(Box::new(new_column)));
                 }
                 ColumnType::Float => {
-                    let data: f64 = column.parse().expect("parse float data");
-                    let data_vec: Vec<Option<f64>> = vec![Some(data)];
-                    let new_column = DataColumn::new(data_vec);
+                    let data_vec: Vec<Option<f64>> = csv_lines
+                        .iter()
+                        .skip(1)
+                        .map(|line| {
+                            let value = line.split(";").collect::<Vec<_>>()[index];
+                            match value.parse::<f64>() {
+                                Ok(parsed_val) => Some(parsed_val),
+                                Err(_) => None, // Handle non-float values as None
+                            }
+                        })
+                        .collect();
+
+                    let new_column = DataColumn::new(data_vec, column_names[index].to_owned());
                     dataframe_columns.push(DataColumnEnum::FloatColumn(Box::new(new_column)));
                 }
                 ColumnType::Boolean => {
-                    let data: bool = column.parse().expect("parse boolean data");
-                    let data_vec: Vec<Option<bool>> = vec![Some(data)];
-                    let new_column = DataColumn::new(data_vec);
+                    let data_vec: Vec<Option<bool>> = csv_lines
+                        .iter()
+                        .skip(1)
+                        .map(|line| {
+                            let value = line.split(";").collect::<Vec<_>>()[index];
+                            match value.parse::<bool>() {
+                                Ok(parsed_val) => Some(parsed_val),
+                                Err(_) => None, // Handle non-boolean values as None
+                            }
+                        })
+                        .collect();
+
+                    let new_column = DataColumn::new(data_vec, column_names[index].to_owned());
                     dataframe_columns.push(DataColumnEnum::BoolColumn(Box::new(new_column)));
                 }
                 ColumnType::Text => {
-                    let data = column.to_string();
-                    let data_vec: Vec<Option<String>> = vec![Some(data)];
-                    let new_column = DataColumn::new(data_vec);
+                    let data_vec: Vec<Option<String>> = csv_lines
+                        .iter()
+                        .skip(1)
+                        .map(|line| {
+                            let value = line.split(";").collect::<Vec<_>>()[index].to_string();
+                            Some(value)
+                        })
+                        .collect();
+
+                    let new_column = DataColumn::new(data_vec, column_names[index].to_owned());
                     dataframe_columns.push(DataColumnEnum::TextColumn(Box::new(new_column)));
                 }
             }
@@ -86,12 +136,40 @@ impl Dataframe {
         })
     }
 
-    fn infer_column_type(value: &str) -> ColumnType {
-        if value.parse::<i64>().is_ok() {
+    fn infer_column_type(column_data: &[String]) -> ColumnType {
+        let mut is_integer = true;
+        let mut is_float = true;
+        let mut is_boolean = true;
+
+        for value in column_data {
+            if value.is_empty() {
+                continue; // Skip empty values
+            }
+
+            if is_integer && value.parse::<i32>().is_err() {
+                is_integer = false;
+            }
+
+            if is_float && value.parse::<f64>().is_err() {
+                is_float = false;
+            }
+
+            if is_boolean && value.parse::<bool>().is_err() {
+                is_boolean = false;
+            }
+
+            // If none of the above parsers succeeded, it must be text
+            if !is_integer && !is_float && !is_boolean {
+                return ColumnType::Text;
+            }
+        }
+
+        // Decide the type based on what was true
+        if is_integer {
             ColumnType::Integer
-        } else if value.parse::<f64>().is_ok() {
+        } else if is_float {
             ColumnType::Float
-        } else if value.parse::<bool>().is_ok() {
+        } else if is_boolean {
             ColumnType::Boolean
         } else {
             ColumnType::Text
@@ -115,22 +193,55 @@ impl Dataframe {
     }
 
     pub fn info(&self) {
-        println!("{:<15} {:<10}", "Column Type", "Count");
-        println!("{:-<25}", "");
+        // Print table headers
+        println!(
+            "{:<20} {:<10} {:<10} {:<15} {:<15}",
+            "Column Name", "Type", "None", "Some", "Total Length"
+        );
+        println!("{:-<65}", ""); // Divider line
 
+        // Iterate through each column and print the info
         for column in &self.columns {
             match column {
                 DataColumnEnum::IntColumn(col) => {
-                    println!("{:<15} {:<10}", "Integer", col.size());
+                    println!(
+                        "{:<20} {:<10} {:<10} {:<15} {:<15}",
+                        col.name,         // Column name
+                        "Integer",        // Type
+                        col.none_count(), // None values count
+                        col.some_count(), // Some values count
+                        col.size()        // Total length
+                    );
                 }
                 DataColumnEnum::FloatColumn(col) => {
-                    println!("{:<15} {:<10}", "Float", col.size());
+                    println!(
+                        "{:<20} {:<10} {:<10} {:<15} {:<15}",
+                        col.name,
+                        "Float",
+                        col.none_count(),
+                        col.some_count(),
+                        col.size()
+                    );
                 }
                 DataColumnEnum::BoolColumn(col) => {
-                    println!("{:<15} {:<10}", "Boolean", col.size());
+                    println!(
+                        "{:<20} {:<10} {:<10} {:<15} {:<15}",
+                        col.name,
+                        "Boolean",
+                        col.none_count(),
+                        col.some_count(),
+                        col.size()
+                    );
                 }
                 DataColumnEnum::TextColumn(col) => {
-                    println!("{:<15} {:<10}", "Text", col.size());
+                    println!(
+                        "{:<20} {:<10} {:<10} {:<15} {:<15}",
+                        col.name,
+                        "Text",
+                        col.none_count(),
+                        col.some_count(),
+                        col.size()
+                    );
                 }
             }
         }

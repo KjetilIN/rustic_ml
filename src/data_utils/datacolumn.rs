@@ -1,10 +1,13 @@
-use std::{any::{type_name, Any}, slice::Iter};
+use std::{
+    any::{type_name, Any},
+    slice::Iter,
+};
 
 // Define a trait for DataColumn
 pub trait DataColumnTrait {
     type Item; // Associated type to represent the type of data (T)
 
-    fn new(data: Vec<Option<Self::Item>>) -> Self
+    fn new(data: Vec<Option<Self::Item>>, name: String) -> Self
     where
         Self: Sized;
     fn as_any(&self) -> &dyn Any;
@@ -25,15 +28,17 @@ pub trait DataColumnTrait {
 #[allow(dead_code)]
 pub struct DataColumn<T> {
     data: Vec<Option<T>>,
+    pub name: String,
     pub data_type: &'static str,
 }
 
 impl<T: 'static + Default> DataColumnTrait for DataColumn<T> {
     type Item = T;
 
-    fn new(data: Vec<Option<T>>) -> Self {
+    fn new(data: Vec<Option<T>>, name: String) -> Self {
         Self {
             data,
+            name,
             data_type: type_name::<T>(),
         }
     }

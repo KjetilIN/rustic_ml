@@ -13,4 +13,7 @@ fn main() {
         "\nMemory usage for the dataframe: {} bytes",
         total_bytes_used
     );
+
+    // Lets print the first five records with the head method:
+    dataframe.head();
 }

@@ -23,15 +23,16 @@
 
 ## Summary
 
+`rustic_ml` is a machine learning library designed to be easy to use, and give the developer enough flexibility.
 
 
+> ⚠️ This library is in the prototype stage. Breaking changes can happen. 
 
 
 ## Table of content <!-- omit in toc -->
 
 - [Summary](#summary)
-- [Introduction](#introduction)
-- [Highlights](#highlights)
+- [Feature list](#feature-list)
 - [Usage](#usage)
 - [Use Cases](#use-cases)
   - [Binary classification](#binary-classification)
@@ -40,11 +41,7 @@
 - [Deeper Reading](#deeper-reading)
 
 
-## Introduction
-
-
-
-## Highlights
+## Feature list 
 
 
 ## Usage
@@ -66,23 +63,3 @@ First, depend on it in your Cargo manifest:
 
 
 ## Deeper Reading
-
-
-
-<!-- Badges -->
-[crate_link]: https://crates.io/crates/rustic_ml "Crate listing"
-[crate_img]: https://img.shields.io/crates/v/r.svg?style=for-the-badge&color=f46623 "Crate badge"
-[docs_link]: https://docs.rs/rustic_ml/latest/rustic_ml "Crate documentation"
-[docs_img]: https://img.shields.io/docsrs/rustic_ml/latest.svg?style=for-the-badge "Documentation badge"
-[downloads_img]: https://img.shields.io/crates/dv/rustic_ml.svg?style=for-the-badge "Crate downloads"
-[license_file]: https://github.com/KjetilIN/rustic_ml/blob/main/LICENSE "Project license"
-[license_img]: https://img.shields.io/crates/l/bitvec.svg?style=for-the-badge "License badge"
-
-<!-- Documentation -->
-
-<!-- External References -->
-[`deku`]: https://crates.io/crates/deku
-[docsrs]: https://docs.rs/bitvec/latest/bitvec
-[erl_bit]: https://www.erlang.org/doc/programming_examples/bit_syntax.html
-[issue]: https://github.com/ferrilab/bitvec/issues/new
-[`radium`]: https://crates.io/crates/radium

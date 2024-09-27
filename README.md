@@ -6,11 +6,16 @@
    <br/>
 
    <!-- Badges Section -->
+
    <p>
       <img alt="Rust" src="https://img.shields.io/badge/rust-1.74-orange?logo=rust" />
-      <img alt="Build" src="https://github.com/KjetilIN/rustic_ml/actions/workflows/test.yml/badge.svg" />
       <img alt="version" src="https://img.shields.io/crates/v/rustic_ml" />
       <img alt="Downloads" src="https://img.shields.io/crates/dv/rustic_ml" />
+   </p>
+
+   <h4>Status</h4>
+   <p>
+      <img alt="Build" src="https://github.com/KjetilIN/rustic_ml/actions/workflows/test.yml/badge.svg" />
       <img alt="docs passing ci" src="https://img.shields.io/docsrs/rustic_ml" />
    </p>
 </div>
@@ -24,15 +29,15 @@
 
 ## Table of content <!-- omit in toc -->
 
-- [Table of content: \<!-- omit toc\>](#table-of-content----omit-toc)
-  - [Introduction](#introduction)
-  - [Highlights](#highlights)
-  - [Usage](#usage)
-  - [Use Cases](#use-cases)
-    - [Binary classification](#binary-classification)
-  - [Macros](#macros)
-  - [Feature Flags](#feature-flags)
-  - [Deeper Reading](#deeper-reading)
+- [Summary](#summary)
+- [Introduction](#introduction)
+- [Highlights](#highlights)
+- [Usage](#usage)
+- [Use Cases](#use-cases)
+  - [Binary classification](#binary-classification)
+- [Macros](#macros)
+- [Feature Flags](#feature-flags)
+- [Deeper Reading](#deeper-reading)
 
 
 ## Introduction

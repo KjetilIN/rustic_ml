@@ -256,6 +256,38 @@ impl Dataframe {
         unimplemented!()
     }
 
+    /// Get all the column names for the `Dataframe`
+    /// 
+    /// # Examples
+    ///
+    /// ```rust
+    /// use rustic_ml::data_utils::dataframe::Dataframe;
+    ///
+    /// let path = String::from("./datasets/european_cities.csv");
+    /// let dataframe = Dataframe::from_csv(path).unwrap();
+    /// 
+    /// let columns = dataframe.column_names();
+    /// assert!(columns == vec!["Barcelona","Belgrade","Berlin","Brussels", "Bucharest","Budapest","Copenhagen","Dublin","Hamburg","Istanbul","Kyiv","London","Madrid","Milan","Moscow","Munich","Paris","Prague","Rome","Saint Petersburg","Sofia","Stockholm","Vienna","Warsaw"])
+    /// 
+    /// ```
+    pub fn column_names(&self) -> Vec<String>{
+        // Vector of all the names created with capacity
+        let mut names: Vec<String> = Vec::with_capacity(self.columns.len());
+
+        // Loop through each column and take add the name to the vector
+        for column in &self.columns{
+            match column{
+                DataColumnEnum::IntColumn(data_column) => names.push(data_column.name.clone()),
+                DataColumnEnum::FloatColumn(data_column) => names.push(data_column.name.clone()),
+                DataColumnEnum::BoolColumn(data_column) => names.push(data_column.name.clone()),
+                DataColumnEnum::TextColumn(data_column) => names.push(data_column.name.clone()),
+            }
+        }
+
+        // Return names
+        return names;
+    }
+
     pub fn print(&self) {
         self.head();
         println!("............");
@@ -266,7 +298,28 @@ impl Dataframe {
         unimplemented!()
     }
 
-    pub fn name_column(&mut self, index: usize, column_name: &str) {}
+    /// Rename the column at given index to a new column name
+    /// 
+    /// # Example 
+    /// 
+    /// ```rust
+    /// 
+    /// ```
+    /// 
+    /// # Errors
+    /// 
+    /// This method does not throw any error. If there is not column at given index, it does nothing. 
+    /// Assume that given column is renamed, if a valid index is given. 
+    pub fn rename_column(&mut self, index: usize, column_name: String) {
+        if index < self.columns.len(){
+            match &mut self.columns[index]{
+                DataColumnEnum::IntColumn(data_column) => data_column.name = column_name,
+                DataColumnEnum::FloatColumn(data_column) => data_column.name = column_name,
+                DataColumnEnum::BoolColumn(data_column) => data_column.name = column_name,
+                DataColumnEnum::TextColumn(data_column) => data_column.name = column_name,
+            }
+        }
+    }
 
     /// Print the first 5 rows of the dataframe.
     ///
@@ -386,14 +439,64 @@ impl Dataframe {
     }
 
     /// Check if the `Dataframe` has rows.
+    /// 
+    /// # Example
+    /// 
+    /// ```rust
+    /// use rustic_ml::data_utils::dataframe::Dataframe;
     ///
+    /// let path = String::from("./datasets/european_cities.csv");
+    /// let dataframe = Dataframe::from_csv(path).unwrap();
+    ///
+    /// assert!(dataframe.has_rows());
+    /// ```
+    /// 
+    /// # Returns 
     /// Returns true if there are rows, that could be None, rows.
     pub fn has_rows(&self) -> bool {
-        unimplemented!()
+        for column in &self.columns{
+            match column{
+                DataColumnEnum::IntColumn(data_column) => {if data_column.size() > 0 {return true}},
+                DataColumnEnum::FloatColumn(data_column) => {if data_column.size() > 0 {return true}},
+                DataColumnEnum::BoolColumn(data_column) => {if data_column.size() > 0 {return true}},
+                DataColumnEnum::TextColumn(data_column) => {if data_column.size() > 0 {return true}},
+            }
+        }
+
+        // No column had any rows 
+        false
     }
 
-    pub fn has_records() {
-        unimplemented!()
+    /// Check if the `Dataframe` any records.
+    /// 
+    /// Record is a line with no `None` values. Use 
+    /// 
+    /// 
+    /// # Example
+    /// 
+    /// ```rust
+    /// use rustic_ml::data_utils::dataframe::Dataframe;
+    ///
+    /// let path = String::from("./datasets/european_cities.csv");
+    /// let dataframe = Dataframe::from_csv(path).unwrap();
+    ///
+    /// assert!(dataframe.has_records());
+    /// ```
+    /// 
+    /// # Returns 
+    /// Returns true if there are rows, that could be None, rows.
+    pub fn has_records(&self) -> bool {
+        for column in &self.columns{
+            match column{
+                DataColumnEnum::IntColumn(data_column) => {if data_column.iter_column().any(|x| x.is_some()) {return true}},
+                DataColumnEnum::FloatColumn(data_column) => {if data_column.iter_column().any(|x| x.is_some()) {return true}},
+                DataColumnEnum::BoolColumn(data_column) => {if data_column.iter_column().any(|x| x.is_some()) {return true}},
+                DataColumnEnum::TextColumn(data_column) => {if data_column.iter_column().any(|x| x.is_some()) {return true}},
+            }
+        }
+
+        // No column had any records 
+        false
     }
 
     /// Check if the `Dataframe` has columns defined.
@@ -432,7 +535,21 @@ impl Dataframe {
     /// Drop the column with the given column name
     ///
     /// Method is not verbose, and therefor assume that the column was removed, or that it never existed.
-    pub fn drop_column(&mut self, column_name: String) {
+    /// 
+    /// # Example
+    /// ```rust
+    /// use rustic_ml::data_utils::dataframe::Dataframe;
+    ///
+    /// let path = String::from("./datasets/european_cities.csv");
+    /// let mut dataframe = Dataframe::from_csv(path).unwrap();
+    ///
+    /// assert!(dataframe.has_column("Barcelona"));
+    /// 
+    /// dataframe.drop_column("Barcelona");
+    /// assert!(!dataframe.has_column("Barcelona"));
+    /// ```
+    /// 
+    pub fn drop_column(&mut self, column_name: &str) {
         self.columns.retain(|col| match col {
             DataColumnEnum::IntColumn(int_col) => int_col.name != column_name,
             DataColumnEnum::FloatColumn(float_col) => float_col.name != column_name,
@@ -449,7 +566,43 @@ impl Dataframe {
         unimplemented!()
     }
 
-    pub fn get_float_feature(&self, column_name: String) -> Option<Vec<f32>> {
+    /// Get the `ColumnType` for a given column. 
+    /// 
+    /// # Example
+    /// ```rust
+    /// use rustic_ml::data_utils::dataframe::Dataframe;
+    ///
+    /// let path = String::from("./datasets/european_cities.csv");
+    /// let mut dataframe = Dataframe::from_csv(path).unwrap();
+    ///
+    /// assert!(dataframe.has_column("Barcelona"));
+    /// 
+    /// dataframe.drop_column("Barcelona");
+    /// assert!(!dataframe.has_column("Barcelona"));
+    /// ```
+    /// 
+    /// # Returns
+    /// 
+    /// Returns `Ǹone` if no column had given name, or the `ColumnType` of the column with the given name.
+    /// 
+    pub fn get_column_type(&self, column_name: &str) -> Option<ColumnType>{
+        // Iterate through each column and check if there is any column with the given name 
+        for column in &self.columns{
+            match column{
+                DataColumnEnum::IntColumn(data_column) => {if data_column.name == column_name { return Some(ColumnType::Integer)}},
+                DataColumnEnum::FloatColumn(data_column) => {if data_column.name == column_name { return Some(ColumnType::Float)}},
+                DataColumnEnum::BoolColumn(data_column) => {if data_column.name == column_name { return Some(ColumnType::Boolean)}},
+                DataColumnEnum::TextColumn(data_column) => {if data_column.name == column_name { return Some(ColumnType::Text)}},
+            }
+
+        }
+
+        // No column name match, return None
+        None
+    }
+
+
+    pub fn get_float_feature(&self, column_name: &str) -> Option<Vec<f32>> {
         unimplemented!()
     }
 

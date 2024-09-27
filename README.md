@@ -1,14 +1,30 @@
-<div style="text-align: center;" align="center">
-
-# `rustic_ml`
-
-## A machine learning library created from scratch <!-- omit in toc -->
-
-
+<div align="center">
+    <h1>rustic_ml</h1>
+    <i>A machine learning library created from scratch</i>
+    <i>Created by Kjetil Indrehus</i>
 </div>
 
-- [`rustic_ml`](#rustic_ml)
-  - [Summary](#summary)
+<div align="center">
+    <br />
+    <img alt="version" src="https://img.shields.io/badge/version-0.2.0-blue" />
+    <img alt="Rust" src="https://img.shields.io/badge/rust-1.74-orange?logo=rust" />
+    
+    [![Documentation][docs_img]][docs_link]
+    [![Crate Downloads][downloads_img]][crate_link]
+</div>
+
+<br />
+
+
+## Summary
+
+
+
+
+
+# Table of content: <!-- omit toc>
+
+- [Table of content: \<!-- omit toc\>](#table-of-content----omit-toc)
   - [Introduction](#introduction)
   - [Highlights](#highlights)
   - [Usage](#usage)
@@ -17,8 +33,6 @@
   - [Macros](#macros)
   - [Feature Flags](#feature-flags)
   - [Deeper Reading](#deeper-reading)
-
-## Summary
 
 
 ## Introduction

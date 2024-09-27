@@ -23,7 +23,8 @@
 
 ## Summary
 
-`rustic_ml` is a machine learning library designed to be easy to use, and give the developer enough flexibility.
+`rustic_ml` is a machine learning library designed to be easy to use, and give the developer a flexible API to work with.
+This library is built of first principles, and the goal is to avoid any dependencies. 
 
 
 > ⚠️ This library is in the prototype stage. Breaking changes can happen. 
@@ -43,6 +44,10 @@
 
 ## Feature list 
 
+The library includes the following key features:
+- `Matrix` implementation
+- `Dataframe` implementation 
+- `Perceptron` binary classifier
 
 ## Usage
 

@@ -1,19 +1,19 @@
 <div align="center">
-    <h1>rustic_ml</h1>
-    <i>A machine learning library created from scratch</i>
-    <i>Created by Kjetil Indrehus</i>
-</div>
+    <h1> rustic_ml </h1>
+    <p><i>A machine learning library created from scratch</i></p>
+    <p><strong>Created by Kjetil Indrehus</strong></p>
 
-<div align="center">
-    <br />
-    <img alt="version" src="https://img.shields.io/badge/version-0.2.0-blue" />
-    <img alt="Rust" src="https://img.shields.io/badge/rust-1.74-orange?logo=rust" />
-    
-    [![Documentation][docs_img]][docs_link]
-    [![Crate Downloads][downloads_img]][crate_link]
-</div>
+   <br/>
 
-<br />
+   <!-- Badges Section -->
+   <p>
+      <img alt="Rust" src="https://img.shields.io/badge/rust-1.74-orange?logo=rust" />
+      <img alt="Build" src="https://github.com/KjetilIN/rustic_ml/actions/workflows/test.yml/badge.svg" />
+      <img alt="version" src="https://img.shields.io/crates/v/rustic_ml" />
+      <img alt="Downloads" src="https://img.shields.io/crates/dv/rustic_ml" />
+      <img alt="docs passing ci" src="https://img.shields.io/docsrs/rustic_ml" />
+   </p>
+</div>
 
 
 ## Summary
@@ -22,7 +22,7 @@
 
 
 
-# Table of content: <!-- omit toc>
+## Table of content <!-- omit in toc -->
 
 - [Table of content: \<!-- omit toc\>](#table-of-content----omit-toc)
   - [Introduction](#introduction)

@@ -116,6 +116,56 @@ impl Dataframe {
         }
     }
 
+
+    /// Infer the column type from a vector
+    fn infer_column_type_from_vec<T>(column_data: &Vec<T>) -> ColumnType
+    where
+        T: ToString, // Ensure T can be converted to string and parsed
+    {
+        let mut is_integer = true;
+        let mut is_float = true;
+        let mut is_boolean = true;
+
+        for value in column_data.iter() {
+            let value_as_string = value.to_string().trim().to_string();
+
+            if value_as_string.is_empty() {
+                continue; // Skip empty values
+            }
+
+            // Check if all values can be integers
+            if is_integer && value_as_string.parse::<i32>().is_err() {
+                is_integer = false;
+            }
+
+            // Check if all values can be floats
+            if is_float && value_as_string.parse::<f64>().is_err() {
+                is_float = false;
+            }
+
+            // Check if all values can be booleans
+            if is_boolean && value_as_string.parse::<bool>().is_err() {
+                is_boolean = false;
+            }
+
+            // If none of the parsing succeeded, treat the column as text
+            if !is_integer && !is_float && !is_boolean {
+                return ColumnType::Text;
+            }
+        }
+
+        // Return the most appropriate type based on successful parsing
+        if is_integer {
+            ColumnType::Integer
+        } else if is_float {
+            ColumnType::Float
+        } else if is_boolean {
+            ColumnType::Boolean
+        } else {
+            ColumnType::Text
+        }
+    }
+
     /// Reads data from a  file using the given delimiter, and creates a `Dataframe`
     ///
     /// # Examples
@@ -691,9 +741,61 @@ impl Dataframe {
         })
     }
 
-    pub fn add_column(&self) {
-        unimplemented!()
+
+    /// Add a new column to the `Dataframe`
+    /// 
+    /// # Example
+    /// 
+    /// ```rust
+    /// use rustic_ml::data_utils::dataframe::Dataframe;
+    ///
+    /// let path = String::from("./datasets/european_cities.csv");
+    /// let mut dataframe = Dataframe::from_csv(path).unwrap();
+    /// 
+    /// dataframe.add_column(vec![1, 2, 3, 4], "custom_index_column");
+    /// ``` 
+    pub fn add_column<T: ToString>(&mut self, list: Vec<T>, column_name: &str) {
+        // Infer the column type based on the list values
+        match Self::infer_column_type_from_vec(&list) {
+            ColumnType::Integer => {
+                // Parse values as i32 and collect them into a Vec<Option<i32>>
+                let data: Vec<Option<i32>> = list.iter().map(|value| {
+                    value.to_string().parse::<i32>().ok()  // Parse i32, return None on failure
+                }).collect();
+                // Add a new integer column to the dataframe
+                let new_column = DataColumn::new(data, column_name.to_owned());
+                self.columns.push(DataColumnEnum::IntColumn(new_column));
+            },
+            ColumnType::Float => {
+                // Parse values as f64 and collect them into a Vec<Option<f64>>
+                let data: Vec<Option<f32>> = list.iter().map(|value| {
+                    value.to_string().parse::<f32>().ok()  // Parse f64, return None on failure
+                }).collect();
+                // Add a new float column to the dataframe
+                let new_column = DataColumn::new(data, column_name.to_owned());
+                self.columns.push(DataColumnEnum::FloatColumn(new_column));
+            },
+            ColumnType::Boolean => {
+                // Parse values as bool and collect them into a Vec<Option<bool>>
+                let data: Vec<Option<bool>> = list.iter().map(|value| {
+                    value.to_string().parse::<bool>().ok()  // Parse bool, return None on failure
+                }).collect();
+                // Add a new boolean column to the dataframe
+                let new_column = DataColumn::new(data, column_name.to_owned());
+                self.columns.push(DataColumnEnum::BoolColumn(new_column));
+            },
+            ColumnType::Text => {
+                // Treat all values as strings, convert to Vec<Option<String>>
+                let data: Vec<Option<String>> = list.into_iter().map(|value| {
+                    Some(value.to_string())  // Convert T to string and wrap in Some
+                }).collect();
+                // Add a new text column to the dataframe
+                let new_column = DataColumn::new(data, column_name.to_owned());
+                self.columns.push(DataColumnEnum::TextColumn(new_column));
+            },
+        };
     }
+    
 
     pub fn add_record(&self) {
         unimplemented!()
@@ -749,7 +851,7 @@ impl Dataframe {
         None
     }
 
-    pub fn get_float_feature(&self, column_name: &str) -> Option<Vec<f32>> {
+    pub fn extract_float_feature(&self, column_name: &str) -> Option<Vec<f32>> {
         unimplemented!()
     }
 

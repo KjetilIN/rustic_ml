@@ -16,10 +16,28 @@ include = [
 	"src/**/*.rs",
 	"benches/*.rs",
 ]
-keywords = [
-	"machine learning",
-    "data processing"
+categories = [
+    "machine learning",
+    "data processing",
+    "statistics",
+    "numerical computing",
+    "data science"
 ]
+
+keywords = [
+    "rust",
+    "machine learning",
+    "neural networks",
+    "regression",
+    "classification",
+    "clustering",
+    "deep learning",
+    "optimization",
+    "data manipulation",
+    "datasets",
+    "feature extraction"
+]
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]

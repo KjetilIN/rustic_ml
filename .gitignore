@@ -27,3 +27,6 @@ Cargo.lock
 /docs/*.gz
 /docs/*.fdb_latexmk
 /docs/*.out
+
+# Ignore checkpoint folder
+.ipynb_checkpoints/

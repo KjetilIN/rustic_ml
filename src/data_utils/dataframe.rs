@@ -7,6 +7,7 @@ use std::fs;
 /// The variants of this enum are `Integer`, `Float`, `Boolean`, and
 /// `Text`, which correspond to the possible data types that a column can have. This enum is used in the
 /// `Dataframe` struct to infer the type of data present in each column when reading data from a file.
+#[derive(PartialEq, Eq, Debug)]
 pub enum ColumnType {
     Integer,
     Float,
@@ -547,8 +548,18 @@ impl Dataframe {
     }
 
     /// Calculate the total memory used for the `Dataframe`
+    /// 
+    /// # Example
+    /// 
+    /// ```rust
+    /// use rustic_ml::data_utils::dataframe::Dataframe;
+    /// 
+    /// let path = String::from("./datasets/european_cities.csv");
+    /// let dataframe = Dataframe::from_csv(path).unwrap();
+    /// assert!(dataframe.memory_usage() == 4608);
+    /// ```
     ///
-    /// Returns:
+    /// # Returns:
     ///
     /// The total memory usage of all columns in the `Dataframe` in bytes.
     pub fn memory_usage(&self) -> usize {
@@ -638,7 +649,6 @@ impl Dataframe {
     ///
     /// Record is a line with no `None` values. Use
     ///
-    ///
     /// # Example
     ///
     /// ```rust
@@ -683,6 +693,16 @@ impl Dataframe {
     }
 
     /// Check if the `Dataframe` has columns defined.
+    /// 
+    /// # Example
+    /// 
+    /// ```rust
+    /// use rustic_ml::data_utils::dataframe::Dataframe;
+    /// 
+    /// let path = String::from("./datasets/european_cities.csv");
+    /// let dataframe = Dataframe::from_csv(path).unwrap();
+    /// assert!(dataframe.has_columns());
+    /// ```
     ///
     /// Returns true if there is at least one `DataColumn`
     pub fn has_columns(&self) -> bool {
@@ -691,7 +711,7 @@ impl Dataframe {
 
     /// Check if a column with given column name exists in the `Dataframe`
     ///
-    /// # Examples
+    /// # Example
     ///
     /// ```rust
     /// use rustic_ml::data_utils::dataframe::Dataframe;
@@ -806,14 +826,15 @@ impl Dataframe {
     /// # Example
     /// ```rust
     /// use rustic_ml::data_utils::dataframe::Dataframe;
+    /// use rustic_ml::data_utils::dataframe::ColumnType;
     ///
     /// let path = String::from("./datasets/european_cities.csv");
-    /// let mut dataframe = Dataframe::from_csv(path).unwrap();
-    ///
+    /// let dataframe = Dataframe::from_csv(path).unwrap();
     /// assert!(dataframe.has_column("Barcelona"));
-    ///
-    /// dataframe.drop_column("Barcelona");
-    /// assert!(!dataframe.has_column("Barcelona"));
+    /// assert!(!dataframe.has_column("Oslo"));
+    /// 
+    /// assert!(dataframe.get_column_type("Barcelona") == Some(ColumnType::Float));
+    /// assert!(dataframe.get_column_type("Oslo") == None);        
     /// ```
     ///
     /// # Returns

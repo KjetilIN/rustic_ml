@@ -25,9 +25,9 @@ categories = [
 ]
 
 keywords = [
-    "machine learning",
-    "neural networks",
-    "deep learning",
+    "machinelearning",
+    "neuralnetworks",
+    "deeplearning",
 ]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

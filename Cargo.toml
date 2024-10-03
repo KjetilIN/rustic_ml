@@ -17,11 +17,8 @@ include = [
 	"benches/*.rs",
 ]
 categories = [
-    "machine learning",
-    "data processing",
-    "statistics",
-    "numerical computing",
-    "data science"
+    "science",
+    "mathematics"
 ]
 
 keywords = [

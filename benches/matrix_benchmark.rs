@@ -1,5 +1,5 @@
 use criterion::{self, black_box, criterion_group, criterion_main, Criterion};
-use rustic_ml::matrix::Matrix;
+use rustic_ml::data_utils::matrix::Matrix;
 
 fn benchmark_matrix_multiplication(c: &mut Criterion) {
     // Define matrix sizes and data

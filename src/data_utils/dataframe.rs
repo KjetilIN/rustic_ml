@@ -117,7 +117,6 @@ impl Dataframe {
         }
     }
 
-
     /// Infer the column type from a vector
     fn infer_column_type_from_vec<T>(column_data: &Vec<T>) -> ColumnType
     where
@@ -303,7 +302,7 @@ impl Dataframe {
         })
     }
 
-    pub fn to_csv(&self, path: String) -> Result<(), ()> {
+    pub fn to_csv(&self, _path: String) -> Result<(), ()> {
         unimplemented!()
     }
 
@@ -345,7 +344,7 @@ impl Dataframe {
         self.tail();
     }
 
-    fn print_full_table(&self) {
+    pub fn print_full_table(&self) {
         unimplemented!()
     }
 
@@ -548,12 +547,12 @@ impl Dataframe {
     }
 
     /// Calculate the total memory used for the `Dataframe`
-    /// 
+    ///
     /// # Example
-    /// 
+    ///
     /// ```rust
     /// use rustic_ml::data_utils::dataframe::Dataframe;
-    /// 
+    ///
     /// let path = String::from("./datasets/european_cities.csv");
     /// let dataframe = Dataframe::from_csv(path).unwrap();
     /// assert!(dataframe.memory_usage() == 4608);
@@ -693,12 +692,12 @@ impl Dataframe {
     }
 
     /// Check if the `Dataframe` has columns defined.
-    /// 
+    ///
     /// # Example
-    /// 
+    ///
     /// ```rust
     /// use rustic_ml::data_utils::dataframe::Dataframe;
-    /// 
+    ///
     /// let path = String::from("./datasets/european_cities.csv");
     /// let dataframe = Dataframe::from_csv(path).unwrap();
     /// assert!(dataframe.has_columns());
@@ -761,61 +760,71 @@ impl Dataframe {
         })
     }
 
-
     /// Add a new column to the `Dataframe`
-    /// 
+    ///
     /// # Example
-    /// 
+    ///
     /// ```rust
     /// use rustic_ml::data_utils::dataframe::Dataframe;
     ///
     /// let path = String::from("./datasets/european_cities.csv");
     /// let mut dataframe = Dataframe::from_csv(path).unwrap();
-    /// 
+    ///
     /// dataframe.add_column(vec![1, 2, 3, 4], "custom_index_column");
-    /// ``` 
+    /// ```
     pub fn add_column<T: ToString>(&mut self, list: Vec<T>, column_name: &str) {
         // Infer the column type based on the list values
         match Self::infer_column_type_from_vec(&list) {
             ColumnType::Integer => {
                 // Parse values as i32 and collect them into a Vec<Option<i32>>
-                let data: Vec<Option<i32>> = list.iter().map(|value| {
-                    value.to_string().parse::<i32>().ok()  // Parse i32, return None on failure
-                }).collect();
+                let data: Vec<Option<i32>> = list
+                    .iter()
+                    .map(|value| {
+                        value.to_string().parse::<i32>().ok() // Parse i32, return None on failure
+                    })
+                    .collect();
                 // Add a new integer column to the dataframe
                 let new_column = DataColumn::new(data, column_name.to_owned());
                 self.columns.push(DataColumnEnum::IntColumn(new_column));
-            },
+            }
             ColumnType::Float => {
                 // Parse values as f64 and collect them into a Vec<Option<f64>>
-                let data: Vec<Option<f32>> = list.iter().map(|value| {
-                    value.to_string().parse::<f32>().ok()  // Parse f64, return None on failure
-                }).collect();
+                let data: Vec<Option<f32>> = list
+                    .iter()
+                    .map(|value| {
+                        value.to_string().parse::<f32>().ok() // Parse f64, return None on failure
+                    })
+                    .collect();
                 // Add a new float column to the dataframe
                 let new_column = DataColumn::new(data, column_name.to_owned());
                 self.columns.push(DataColumnEnum::FloatColumn(new_column));
-            },
+            }
             ColumnType::Boolean => {
                 // Parse values as bool and collect them into a Vec<Option<bool>>
-                let data: Vec<Option<bool>> = list.iter().map(|value| {
-                    value.to_string().parse::<bool>().ok()  // Parse bool, return None on failure
-                }).collect();
+                let data: Vec<Option<bool>> = list
+                    .iter()
+                    .map(|value| {
+                        value.to_string().parse::<bool>().ok() // Parse bool, return None on failure
+                    })
+                    .collect();
                 // Add a new boolean column to the dataframe
                 let new_column = DataColumn::new(data, column_name.to_owned());
                 self.columns.push(DataColumnEnum::BoolColumn(new_column));
-            },
+            }
             ColumnType::Text => {
                 // Treat all values as strings, convert to Vec<Option<String>>
-                let data: Vec<Option<String>> = list.into_iter().map(|value| {
-                    Some(value.to_string())  // Convert T to string and wrap in Some
-                }).collect();
+                let data: Vec<Option<String>> = list
+                    .into_iter()
+                    .map(|value| {
+                        Some(value.to_string()) // Convert T to string and wrap in Some
+                    })
+                    .collect();
                 // Add a new text column to the dataframe
                 let new_column = DataColumn::new(data, column_name.to_owned());
                 self.columns.push(DataColumnEnum::TextColumn(new_column));
-            },
+            }
         };
     }
-    
 
     pub fn add_record(&self) {
         unimplemented!()
@@ -832,7 +841,7 @@ impl Dataframe {
     /// let dataframe = Dataframe::from_csv(path).unwrap();
     /// assert!(dataframe.has_column("Barcelona"));
     /// assert!(!dataframe.has_column("Oslo"));
-    /// 
+    ///
     /// assert!(dataframe.get_column_type("Barcelona") == Some(ColumnType::Float));
     /// assert!(dataframe.get_column_type("Oslo") == None);        
     /// ```
@@ -873,73 +882,74 @@ impl Dataframe {
     }
 
     /// Extract a single feature of floats into a `Vec<Option<f32>>`
-    /// 
-    /// Creates a clone of the column. Values within the vector might be None. 
+    ///
+    /// Creates a clone of the column. Values within the vector might be None.
     /// Use the column name to identify the column that will be extracted.
     pub fn float_feature(&self, column_name: &str) -> Option<Vec<Option<f32>>> {
-        // Return none if there is no vector with 
-        if !self.has_column(column_name){
-            return None
+        // Return none if there is no vector with
+        if !self.has_column(column_name) {
+            return None;
         }
 
         // Iterate through the columns until the correct one is found
-        for column in &self.columns{
+        for column in &self.columns {
             match column {
                 DataColumnEnum::FloatColumn(float_col) => {
                     if float_col.name == column_name {
                         return Some(float_col.extract());
                     }
-                },
+                }
                 _ => continue,
-
             }
         }
-        
-        // The desired column was not a float value 
+
+        // The desired column was not a float value
         None
     }
 
-
     /// Extract two sets of features into a single vector of tuples (`Vec<Option<(f32, f32)>>`).
-    /// 
-    /// Creates a clone of the column. Values within the vector might be `None`. 
-    /// A row in the vector is `None`, if one of the vectors are none. 
+    ///
+    /// Creates a clone of the column. Values within the vector might be `None`.
+    /// A row in the vector is `None`, if one of the vectors are none.
     /// Use the column name to identify the column that will be extracted.
     ///
-    /// 
+    ///
     /// # Returns
-    /// 
-    /// Returns a `Vec<Option<(f32, f32)>>` created from the two features. 
+    ///
+    /// Returns a `Vec<Option<(f32, f32)>>` created from the two features.
     /// Returns `None` if the two feature vectors are not the same length or of any vector did not exist.
-    pub fn float_features(&self, first_column_name: &str, second_column_name: &str) -> Option<Vec<Option<(f32, f32)>>> {
-        if !self.has_column(first_column_name) || !self.has_column(second_column_name){
-            return None
+    pub fn float_features(
+        &self,
+        first_column_name: &str,
+        second_column_name: &str,
+    ) -> Option<Vec<Option<(f32, f32)>>> {
+        if !self.has_column(first_column_name) || !self.has_column(second_column_name) {
+            return None;
         }
 
         let mut first_column: Option<Vec<Option<f32>>> = None;
         let mut second_column: Option<Vec<Option<f32>>> = None;
 
-        for column in &self.columns{
+        for column in &self.columns {
             match column {
                 DataColumnEnum::FloatColumn(float_col) => {
                     if float_col.name == first_column_name {
                         first_column = Some(float_col.extract());
-                    }else if float_col.name == second_column_name {
+                    } else if float_col.name == second_column_name {
                         second_column = Some(float_col.extract());
                     }
-                },
+                }
                 _ => continue,
-
             }
         }
 
-        // Return none if one of the columns are none 
-        if first_column.is_none() || second_column.is_none(){
+        // Return none if one of the columns are none
+        if first_column.is_none() || second_column.is_none() {
             return None;
         }
 
-        // Merge the two columns 
-        let merged_column:Option<Vec<Option<(f32, f32)>>> = match (first_column, second_column) {
+        // Merge the two columns
+        let merged_column: Option<Vec<Option<(f32, f32)>>> = match (first_column, second_column) {
             (Some(first_vec), Some(second_vec)) => {
                 // Ensure the lengths of both vectors are the same
                 if first_vec.len() == second_vec.len() {
@@ -950,33 +960,34 @@ impl Dataframe {
                             .zip(second_vec.into_iter())
                             .map(|(first_opt, second_opt)| {
                                 match (first_opt, second_opt) {
-                                    (Some(first_val), Some(second_val)) => Some((first_val, second_val)),
+                                    (Some(first_val), Some(second_val)) => {
+                                        Some((first_val, second_val))
+                                    }
                                     _ => None, // If either is None, return None
                                 }
                             })
                             .collect(),
                     )
                 } else {
-                    None 
+                    None
                 }
             }
-            _ => None, 
+            _ => None,
         };
         merged_column
     }
 
-
     /// Get the value at given column and given row index.
-    /// 
-    /// 
+    ///
+    ///
     /// # Returns
-    /// 
+    ///
     /// The value as a `String` or `None` if:
-    /// - there was no column with that name 
+    /// - there was no column with that name
     /// - the given row index was out of bounce
     /// - the value at that entry was None
-    pub fn at_str(&self, column_name: &str, row_index: usize) -> Option<String>{
-        if self.has_column(column_name){
+    pub fn at_str(&self, column_name: &str, row_index: usize) -> Option<String> {
+        if self.has_column(column_name) {
             for column in &self.columns {
                 match column {
                     DataColumnEnum::IntColumn(data_column) => {
@@ -1003,7 +1014,7 @@ impl Dataframe {
             }
         }
 
-        // No match none is returned 
+        // No match none is returned
         None
     }
 

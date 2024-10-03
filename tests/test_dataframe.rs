@@ -3,32 +3,59 @@ mod tests {
     use rustic_ml::data_utils::dataframe::{ColumnType, Dataframe};
 
     #[test]
-    fn test_from_csv(){
+    fn test_from_csv() {
         let path = String::from("./datasets/european_cities.csv");
         let dataframe = Dataframe::from_csv(path);
         assert!(dataframe.is_ok())
     }
 
-
     #[test]
-    fn test_from_file(){
+    fn test_from_file() {
         let path = String::from("./datasets/european_cities.txt");
         let dataframe = Dataframe::from_file(path, ' ');
         assert!(dataframe.is_ok())
     }
 
     #[test]
-    fn test_column_names(){
+    fn test_column_names() {
         let path = String::from("./datasets/european_cities.csv");
         let dataframe = Dataframe::from_csv(path);
         assert!(dataframe.is_ok());
 
         let columns = dataframe.unwrap().column_names();
-        assert!(columns == vec!["Barcelona","Belgrade","Berlin","Brussels", "Bucharest","Budapest","Copenhagen","Dublin","Hamburg","Istanbul","Kyiv","London","Madrid","Milan","Moscow","Munich","Paris","Prague","Rome","Saint Petersburg","Sofia","Stockholm","Vienna","Warsaw"])
+        assert!(
+            columns
+                == vec![
+                    "Barcelona",
+                    "Belgrade",
+                    "Berlin",
+                    "Brussels",
+                    "Bucharest",
+                    "Budapest",
+                    "Copenhagen",
+                    "Dublin",
+                    "Hamburg",
+                    "Istanbul",
+                    "Kyiv",
+                    "London",
+                    "Madrid",
+                    "Milan",
+                    "Moscow",
+                    "Munich",
+                    "Paris",
+                    "Prague",
+                    "Rome",
+                    "Saint Petersburg",
+                    "Sofia",
+                    "Stockholm",
+                    "Vienna",
+                    "Warsaw"
+                ]
+        )
     }
 
     #[test]
-    fn test_rename_colum(){
+    fn test_rename_colum() {
         let path = String::from("./datasets/european_cities.csv");
         let mut dataframe = Dataframe::from_csv(path).unwrap();
 
@@ -40,21 +67,25 @@ mod tests {
     }
 
     #[test]
-    fn test_memory_usage(){
+    fn test_memory_usage() {
         let path = String::from("./datasets/european_cities.csv");
         let dataframe = Dataframe::from_csv(path).unwrap();
-        assert!(dataframe.memory_usage() == 4608, "Memory usage was {}", dataframe.memory_usage());
+        assert!(
+            dataframe.memory_usage() == 4608,
+            "Memory usage was {}",
+            dataframe.memory_usage()
+        );
     }
 
     #[test]
-    fn test_has_rows(){
+    fn test_has_rows() {
         let path = String::from("./datasets/european_cities.csv");
         let dataframe = Dataframe::from_csv(path).unwrap();
         assert!(dataframe.has_rows());
     }
 
     #[test]
-    fn test_has_records(){
+    fn test_has_records() {
         let path = String::from("./datasets/european_cities.csv");
         let dataframe = Dataframe::from_csv(path).unwrap();
 
@@ -62,15 +93,14 @@ mod tests {
     }
 
     #[test]
-    fn test_has_columns(){
+    fn test_has_columns() {
         let path = String::from("./datasets/european_cities.csv");
         let dataframe = Dataframe::from_csv(path).unwrap();
         assert!(dataframe.has_columns());
     }
 
     #[test]
-    fn test_has_column(){
-
+    fn test_has_column() {
         let path = String::from("./datasets/european_cities.csv");
         let dataframe = Dataframe::from_csv(path).unwrap();
 
@@ -79,7 +109,7 @@ mod tests {
     }
 
     #[test]
-    fn test_drop_column(){
+    fn test_drop_column() {
         let path = String::from("./datasets/european_cities.csv");
         let mut dataframe = Dataframe::from_csv(path).unwrap();
 
@@ -90,7 +120,7 @@ mod tests {
     }
 
     #[test]
-    fn test_add_column(){
+    fn test_add_column() {
         let path = String::from("./datasets/european_cities.csv");
         let mut dataframe = Dataframe::from_csv(path).unwrap();
         assert!(!dataframe.has_column("custom_index_column"));
@@ -99,17 +129,14 @@ mod tests {
         assert!(dataframe.has_column("custom_index_column"));
     }
 
-
     #[test]
-    fn test_get_column_type(){
+    fn test_get_column_type() {
         let path = String::from("./datasets/european_cities.csv");
         let dataframe = Dataframe::from_csv(path).unwrap();
         assert!(dataframe.has_column("Barcelona"));
         assert!(!dataframe.has_column("Oslo"));
 
         assert!(dataframe.get_column_type("Barcelona") == Some(ColumnType::Float));
-        assert!(dataframe.get_column_type("Oslo") == None);        
+        assert!(dataframe.get_column_type("Oslo") == None);
     }
-
-
 }

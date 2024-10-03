@@ -94,9 +94,9 @@ impl<T: 'static + Default + Clone> DataColumnTrait for DataColumn<T> {
     fn iter_column(&self) -> Iter<Option<T>> {
         self.data.iter()
     }
-    
+
     fn extract(&self) -> Vec<Option<T>> {
         let vec: Vec<_> = self.data.iter().cloned().collect();
-        return vec
+        return vec;
     }
 }

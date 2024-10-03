@@ -965,11 +965,49 @@ impl Dataframe {
         merged_column
     }
 
-    pub fn at(&self) {
-        unimplemented!()
+
+    /// Get the value at given column and given row index.
+    /// 
+    /// 
+    /// # Returns
+    /// 
+    /// The value as a `String` or `None` if:
+    /// - there was no column with that name 
+    /// - the given row index was out of bounce
+    /// - the value at that entry was None
+    pub fn at_str(&self, column_name: &str, row_index: usize) -> Option<String>{
+        if self.has_column(column_name){
+            for column in &self.columns {
+                match column {
+                    DataColumnEnum::IntColumn(data_column) => {
+                        if data_column.name == column_name {
+                            return data_column.get(row_index).map(|v| v.to_string());
+                        }
+                    }
+                    DataColumnEnum::FloatColumn(data_column) => {
+                        if data_column.name == column_name {
+                            return data_column.get(row_index).map(|v| v.to_string());
+                        }
+                    }
+                    DataColumnEnum::BoolColumn(data_column) => {
+                        if data_column.name == column_name {
+                            return data_column.get(row_index).map(|v| v.to_string());
+                        }
+                    }
+                    DataColumnEnum::TextColumn(data_column) => {
+                        if data_column.name == column_name {
+                            return data_column.get(row_index).map(|v| v.to_string());
+                        }
+                    }
+                }
+            }
+        }
+
+        // No match none is returned 
+        None
     }
 
-    pub fn at_index(&self) {
+    pub fn at_index_str(&self) -> Option<&str> {
         unimplemented!()
     }
 }

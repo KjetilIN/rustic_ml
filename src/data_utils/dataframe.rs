@@ -872,8 +872,97 @@ impl Dataframe {
         None
     }
 
-    pub fn extract_float_feature(&self, column_name: &str) -> Option<Vec<f32>> {
-        unimplemented!()
+    /// Extract a single feature of floats into a `Vec<Option<f32>>`
+    /// 
+    /// Creates a clone of the column. Values within the vector might be None. 
+    /// Use the column name to identify the column that will be extracted.
+    pub fn float_feature(&self, column_name: &str) -> Option<Vec<Option<f32>>> {
+        // Return none if there is no vector with 
+        if !self.has_column(column_name){
+            return None
+        }
+
+        // Iterate through the columns until the correct one is found
+        for column in &self.columns{
+            match column {
+                DataColumnEnum::FloatColumn(float_col) => {
+                    if float_col.name == column_name {
+                        return Some(float_col.extract());
+                    }
+                },
+                _ => continue,
+
+            }
+        }
+        
+        // The desired column was not a float value 
+        None
+    }
+
+
+    /// Extract two sets of features into a single vector of tuples (`Vec<Option<(f32, f32)>>`).
+    /// 
+    /// Creates a clone of the column. Values within the vector might be `None`. 
+    /// A row in the vector is `None`, if one of the vectors are none. 
+    /// Use the column name to identify the column that will be extracted.
+    ///
+    /// 
+    /// # Returns
+    /// 
+    /// Returns a `Vec<Option<(f32, f32)>>` created from the two features. 
+    /// Returns `None` if the two feature vectors are not the same length or of any vector did not exist.
+    pub fn float_features(&self, first_column_name: &str, second_column_name: &str) -> Option<Vec<Option<(f32, f32)>>> {
+        if !self.has_column(first_column_name) || !self.has_column(second_column_name){
+            return None
+        }
+
+        let mut first_column: Option<Vec<Option<f32>>> = None;
+        let mut second_column: Option<Vec<Option<f32>>> = None;
+
+        for column in &self.columns{
+            match column {
+                DataColumnEnum::FloatColumn(float_col) => {
+                    if float_col.name == first_column_name {
+                        first_column = Some(float_col.extract());
+                    }else if float_col.name == second_column_name {
+                        second_column = Some(float_col.extract());
+                    }
+                },
+                _ => continue,
+
+            }
+        }
+
+        // Return none if one of the columns are none 
+        if first_column.is_none() || second_column.is_none(){
+            return None;
+        }
+
+        // Merge the two columns 
+        let merged_column:Option<Vec<Option<(f32, f32)>>> = match (first_column, second_column) {
+            (Some(first_vec), Some(second_vec)) => {
+                // Ensure the lengths of both vectors are the same
+                if first_vec.len() == second_vec.len() {
+                    // Combine the two vectors element-wise
+                    Some(
+                        first_vec
+                            .into_iter()
+                            .zip(second_vec.into_iter())
+                            .map(|(first_opt, second_opt)| {
+                                match (first_opt, second_opt) {
+                                    (Some(first_val), Some(second_val)) => Some((first_val, second_val)),
+                                    _ => None, // If either is None, return None
+                                }
+                            })
+                            .collect(),
+                    )
+                } else {
+                    None 
+                }
+            }
+            _ => None, 
+        };
+        merged_column
     }
 
     pub fn at(&self) {

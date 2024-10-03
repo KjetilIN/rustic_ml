@@ -19,6 +19,7 @@ pub trait DataColumnTrait {
     fn remove(&mut self, index: usize);
     fn append(&mut self, item: Self::Item);
     fn reset(&mut self);
+    fn extract(&self) -> Vec<Option<Self::Item>>;
     fn reset_default(&mut self)
     where
         Self::Item: Default;
@@ -32,7 +33,7 @@ pub struct DataColumn<T> {
     pub data_type: &'static str,
 }
 
-impl<T: 'static + Default> DataColumnTrait for DataColumn<T> {
+impl<T: 'static + Default + Clone> DataColumnTrait for DataColumn<T> {
     type Item = T;
 
     fn new(data: Vec<Option<T>>, name: String) -> Self {
@@ -92,5 +93,10 @@ impl<T: 'static + Default> DataColumnTrait for DataColumn<T> {
 
     fn iter_column(&self) -> Iter<Option<T>> {
         self.data.iter()
+    }
+    
+    fn extract(&self) -> Vec<Option<T>> {
+        let vec: Vec<_> = self.data.iter().cloned().collect();
+        return vec
     }
 }

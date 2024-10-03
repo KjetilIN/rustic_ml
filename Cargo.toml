@@ -5,14 +5,25 @@ authors = ["Kjetil Indrehus <kjetilindrehus@gmail.com>"]
 edition = "2021"
 license = "MIT"
 description = "A machine learning library created from scratch with Rust."
+documentation = "https://docs.rs/rustic_ml"
 repository = "https://github.com/KjetilIN/rustic_ml"
 readme = "README.md"
-
+include = [
+	"Cargo.toml",
+	"LICENSE",
+	"README.md",
+	"docs/*.pdf",
+	"src/**/*.rs",
+	"benches/*.rs",
+]
+keywords = [
+	"machine learning",
+    "data processing"
+]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 rand = "0.8.5" 
-
 
 [features]
 extensive_benchmark = [] # Enable this to run extensive benchmarks 

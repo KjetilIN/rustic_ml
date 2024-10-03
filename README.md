@@ -51,11 +51,11 @@ The library includes the following key features:
 
 ## Usage
 
-`rustic_ml` has documentation on docs.rs. It will be very usefull to read it through
+`rustic_ml` has documentation on docs.rs. It will be very useful to read it through
 https://docs.rs/rustic_ml/latest/rustic_ml/
 
 Run the following Cargo command in your project directory:
-```
+```terminal
 cargo add rustic_ml
 ```
 Or add it to the Cargo manifest. Make sure to pick the newest version:
@@ -71,8 +71,8 @@ See also the specific use cases in the next section of the README file.
 
 ### Binary classification 
 
-`rustic_ml` has implemented the `Percetpron`. It works well when you know your data is linearly seperable.
-In the example below, we use a Jupyter Notebook with Rust kernal. This makes it easy to build up models with Rust:
+`rustic_ml` has implemented the `Perceptron`. It works well when you know your data is linearly separable.
+In the example below, we use a Jupyter Notebook with Rust kernel. This makes it easy to build up models with Rust:
 
 ![image](https://github.com/user-attachments/assets/29ef6f0c-ab6f-46f9-bc2b-1b748c34e039)
 
@@ -81,12 +81,12 @@ In the example below, we use a Jupyter Notebook with Rust kernal. This makes it 
 
 ## Macros
 
-> Comming soon!
+> Coming soon!
 
 ## Feature Flags
 
-> Comming soon!
+> Coming soon!
 
 ## Deeper Reading
 
-> Comming soon!
+> Coming soon!

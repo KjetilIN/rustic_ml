@@ -25,17 +25,9 @@ categories = [
 ]
 
 keywords = [
-    "rust",
     "machine learning",
     "neural networks",
-    "regression",
-    "classification",
-    "clustering",
     "deep learning",
-    "optimization",
-    "data manipulation",
-    "datasets",
-    "feature extraction"
 ]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

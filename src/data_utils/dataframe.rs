@@ -978,6 +978,17 @@ impl Dataframe {
     }
 
     /// Get the value at given column and given row index.
+    /// 
+    /// # Example
+    /// 
+    /// ```rust
+    /// use rustic_ml::data_utils::dataframe::Dataframe;
+    /// 
+    /// let path = String::from("./datasets/european_cities.csv");
+    /// let dataframe = Dataframe::from_csv(path).unwrap();
+    /// 
+    /// assert!(dataframe.at_str("Barcelona", 2) == Some("1497.61".to_string()));
+    /// ```
     ///
     ///
     /// # Returns
@@ -1018,7 +1029,55 @@ impl Dataframe {
         None
     }
 
-    pub fn at_index_str(&self) -> Option<&str> {
-        unimplemented!()
+    /// Get the value at given the index of the item.
+    /// Index 0 is the item in the first row, first column. 
+    /// 
+    /// # Example
+    /// 
+    /// ```rust
+    /// use rustic_ml::data_utils::dataframe::Dataframe;
+    /// 
+    /// let path = String::from("./datasets/european_cities.csv");
+    /// let dataframe = Dataframe::from_csv(path).unwrap();
+    /// 
+    /// assert!(dataframe.at_index_str(2) == Some("1497.61".to_string()));
+    /// ```
+    ///
+    ///
+    /// # Returns
+    ///
+    /// The value as a `String` or `None` if:
+    /// - the given index was out of bounce
+    /// - the value at that entry was None
+    pub fn at_index_str(&self, index: usize) -> Option<String> {
+        let column_index = index % self.columns.len();
+        let row_index = index / self.columns.len();
+
+        match &self.columns[column_index]{
+            DataColumnEnum::IntColumn(data_column) => {
+                if row_index > data_column.size(){
+                    return None;
+                }
+                return data_column.get(row_index).map(|v| v.to_string());
+            },
+            DataColumnEnum::FloatColumn(data_column) => {
+                if row_index > data_column.size(){
+                    return None;
+                }
+                return data_column.get(row_index).map(|v| v.to_string());
+            },
+            DataColumnEnum::BoolColumn(data_column) => {
+                if row_index > data_column.size(){
+                    return None;
+                }
+                return data_column.get(row_index).map(|v| v.to_string());
+            },
+            DataColumnEnum::TextColumn(data_column) => {
+                if row_index > data_column.size(){
+                    return None;
+                }
+                return data_column.get(row_index).map(|v| v.to_string());
+            },
+        }
     }
 }

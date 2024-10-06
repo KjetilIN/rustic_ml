@@ -478,9 +478,93 @@ impl Dataframe {
 
     /// Print the last 5 rows of the `Dataframe`.
     ///
-    /// If the `Dataframe` has less then 5 rows, then it prints the whole `Dataframe`
+    /// If the `Dataframe` has less then 5 rows, then it prints the whole `Dataframe`.
+    /// Note that current implementation does not take into account the terminal width.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use rustic_ml::data_utils::dataframe::Dataframe;
+    ///
+    /// let path = String::from("./datasets/european_cities.csv");
+    /// let dataframe = Dataframe::from_csv(path).unwrap();
+    ///
+    /// dataframe.tail();
+    /// ```
+    ///
+    /// # Errors
+    ///
+    /// Does create an error. If the dataframe is empty, then it will print a information string
     pub fn tail(&self) {
-        unimplemented!()
+        // Determine the number of rows to display (5 or fewer if not enough rows)
+        let row_count = self.columns.get(0).map_or(0, |col| match col {
+            DataColumnEnum::IntColumn(c) => c.size(),
+            DataColumnEnum::FloatColumn(c) => c.size(),
+            DataColumnEnum::BoolColumn(c) => c.size(),
+            DataColumnEnum::TextColumn(c) => c.size(),
+        });
+
+        let start_row_index = usize::max(0, row_count - 5);
+        let end_row_index = usize::max(5, row_count);
+
+        if row_count == 0 {
+            println!("Dataframe is empty.");
+            return;
+        }
+
+        // Print column headers (names)
+        for column in &self.columns {
+            match column {
+                DataColumnEnum::IntColumn(c) => print!("{:<15}", c.name),
+                DataColumnEnum::FloatColumn(c) => print!("{:<15}", c.name),
+                DataColumnEnum::BoolColumn(c) => print!("{:<15}", c.name),
+                DataColumnEnum::TextColumn(c) => print!("{:<15}", c.name),
+            }
+        }
+        println!();
+
+        // Print separator
+        for _ in &self.columns {
+            print!("{:-<15}", "_");
+        }
+        println!();
+
+        // Print the rows
+        for row_idx in start_row_index..end_row_index {
+            for column in &self.columns {
+                match column {
+                    DataColumnEnum::IntColumn(c) => {
+                        if let Some(value) = c.get(row_idx) {
+                            print!("{:<15}", value);
+                        } else {
+                            print!("{:<15}", "None");
+                        }
+                    }
+                    DataColumnEnum::FloatColumn(c) => {
+                        if let Some(value) = c.get(row_idx) {
+                            print!("{:<15}", value);
+                        } else {
+                            print!("{:<15}", "None");
+                        }
+                    }
+                    DataColumnEnum::BoolColumn(c) => {
+                        if let Some(value) = c.get(row_idx) {
+                            print!("{:<15}", value);
+                        } else {
+                            print!("{:<15}", "None");
+                        }
+                    }
+                    DataColumnEnum::TextColumn(c) => {
+                        if let Some(value) = c.get(row_idx) {
+                            print!("{:<15}", value);
+                        } else {
+                            print!("{:<15}", "None");
+                        }
+                    }
+                }
+            }
+            println!(); // Move to the next line after each row
+        }
     }
 
     /// Prints information about columns in the `Dataframe`

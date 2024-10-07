@@ -142,10 +142,9 @@ mod tests {
     }
 
     #[test]
-    fn test_at_str(){
+    fn test_at_str() {
         let path = String::from("./datasets/european_cities.csv");
         let dataframe = Dataframe::from_csv(path).unwrap();
-
 
         assert!(dataframe.at_str("Barcelona", 2) == Some("1497.61".to_string()));
         assert!(dataframe.at_str("Berlin", 1) == Some("999.25".to_string()));
@@ -153,24 +152,20 @@ mod tests {
         assert!(dataframe.at_str("Warsaw", 23) == Some("0".to_string()));
         assert!(dataframe.at_str("Brussels", 2) == Some("651.62".to_string()));
 
-
         assert!(dataframe.at_str("Oslo", 1) == None);
         assert!(dataframe.at_str("Brussels", 50) == None);
         assert!(dataframe.at_str("America", 5) == None);
     }
 
     #[test]
-    fn test_at_index_str(){
+    fn test_at_index_str() {
         let path = String::from("./datasets/european_cities.csv");
         let dataframe = Dataframe::from_csv(path).unwrap();
-
 
         assert!(dataframe.at_index_str(2) == Some("1497.61".to_string()));
         assert!(dataframe.at_index_str(24) == Some("1528.13".to_string()));
         assert!(dataframe.at_index_str(49) == Some("999.25".to_string()));
 
-        assert!(dataframe.at_index_str((24*24 +1) as usize) == None)
+        assert!(dataframe.at_index_str((24 * 24 + 1) as usize) == None)
     }
-
-
 }

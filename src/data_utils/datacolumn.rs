@@ -1,7 +1,4 @@
-use std::{
-    any::type_name,
-    slice::Iter,
-};
+use std::{any::type_name, slice::Iter};
 
 // Define a trait for DataColumn
 pub trait DataColumnTrait {
@@ -11,7 +8,6 @@ pub trait DataColumnTrait {
     fn new(data: Vec<Option<Self::Item>>, name: String) -> Self
     where
         Self: Sized;
-
 
     /// Get the item in the column
     fn get(&self, index: usize) -> Option<&Self::Item>;

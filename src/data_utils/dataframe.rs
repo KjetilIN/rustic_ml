@@ -338,16 +338,6 @@ impl Dataframe {
         return names;
     }
 
-    pub fn print(&self) {
-        self.head();
-        println!("............");
-        self.tail();
-    }
-
-    pub fn print_full_table(&self) {
-        unimplemented!()
-    }
-
     /// Rename the column at given index to a new column name
     ///
     /// # Example

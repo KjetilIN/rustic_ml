@@ -4,3 +4,4 @@ pub mod activation;
 pub mod data_utils;
 pub mod perceptron;
 pub mod linear_regression;
+pub mod cost;

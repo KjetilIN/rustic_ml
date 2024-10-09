@@ -7,7 +7,7 @@ use std::iter::zip;
 pub struct CostFunction{}
 
 #[allow(dead_code)]
-impl CostFunction{
+ impl CostFunction{
 
     /// MSE - mean square error cost function.
     /// 
@@ -17,7 +17,7 @@ impl CostFunction{
     /// 
     /// # Returns 
     /// The calculated mean squared error between the predictions and the target
-    fn mean_square_error(predictions:&Vec<f32>, targets: &Vec<f32>) -> f32{
+    pub fn mean_square_error(predictions:&Vec<f32>, targets: &Vec<f32>) -> f32{
         // Assert that they have the same length 
         assert!(predictions.len() == targets.len());
         let n = predictions.len() as f32;
@@ -39,7 +39,7 @@ impl CostFunction{
     /// 
     /// # Returns 
     /// The calculated the root mean squared error between the predictions and the target
-    fn root_mean_squared_error(predictions:&Vec<f32>, targets: &Vec<f32>) -> f32{
+    pub fn root_mean_squared_error(predictions:&Vec<f32>, targets: &Vec<f32>) -> f32{
         return Self::mean_square_error(predictions, targets).sqrt();
     }
 
@@ -52,7 +52,7 @@ impl CostFunction{
     /// 
     /// # Returns 
     /// The calculated the mean absolute error between the predictions and the target
-    fn mean_absolute_error(predictions:&Vec<f32>, targets: &Vec<f32>) ->f32{
+    pub fn mean_absolute_error(predictions:&Vec<f32>, targets: &Vec<f32>) ->f32{
         // Assert that they have the same length 
         assert!(predictions.len() == targets.len());
         let n = predictions.len() as f32;

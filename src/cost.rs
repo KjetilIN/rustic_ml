@@ -1,8 +1,6 @@
 use std::iter::zip;
 
 
-
-
 pub enum CostFunctionOption {
     /// Mean square error
     MSE, 
@@ -60,6 +58,10 @@ pub struct CostFunction{}
         return square_sum / n;
     }
 
+    pub fn partial_mse(){
+        unimplemented!()
+    }
+
     /// RMSE - root mean square error cost function.
     /// 
     /// # Arguments
@@ -70,6 +72,10 @@ pub struct CostFunction{}
     /// The calculated the root mean squared error between the predictions and the target
     pub fn root_mean_squared_error(predictions:&Vec<f32>, targets: &Vec<f32>) -> f32{
         return Self::mean_square_error(predictions, targets).sqrt();
+    }
+
+    pub fn partial_rmse(){
+        unimplemented!()
     }
 
 
@@ -93,6 +99,10 @@ pub struct CostFunction{}
         }
 
         return square_sum / n;
+    }
+
+    pub fn partial_mae(){
+        unimplemented!()
     }
 
 }

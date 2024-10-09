@@ -1,6 +1,35 @@
 use std::iter::zip;
 
 
+
+
+pub enum CostFunctionOption {
+    /// Mean square error
+    MSE, 
+
+    /// Root mean square error
+    RMSE,
+
+    /// Mean absolute error
+    MAE, 
+}
+
+
+impl CostFunctionOption {
+    /// Get the cost function for the `CostFunctionOption`
+    /// 
+    /// Returns the cost function 
+    pub fn get_fn(&self) -> fn(&Vec<f32>, &Vec<f32>) -> f32{
+        match &self {
+            CostFunctionOption::MSE => CostFunction::mean_absolute_error,
+            CostFunctionOption::RMSE => CostFunction::root_mean_squared_error,
+            CostFunctionOption::MAE => CostFunction::mean_absolute_error,
+        }
+    }
+}
+
+
+
 /// Commonly used implementations of cost functions 
 /// 
 /// Resource: <https://www.geeksforgeeks.org/ml-linear-regression/#cost-function-for-linear-regression>

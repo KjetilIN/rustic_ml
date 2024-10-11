@@ -53,7 +53,7 @@ impl CostFunction {
         return square_sum / n;
     }
 
-    pub fn partial_mse() {
+    pub fn mse_derivative() {
         unimplemented!()
     }
 

@@ -1,6 +1,6 @@
 use rand::{distributions::Uniform, prelude::Distribution};
 
-use crate::activation::h_step;
+use crate::activation::Activation;
 
 /// Perceptron - represents a single-layer neural network with bias and weights.
 /// Typically used for a binary classification, if the data is linearly separable.  
@@ -289,7 +289,7 @@ impl Perceptron {
     pub fn predict(&self, features: &(f64, f64)) -> usize {
         // Return the output of the prediction
         // Using the Heaviside step function to get the value as 0 or 1
-        h_step(self.bias + self.w1 * features.0 + self.w2 * features.1)
+        Activation::h_step(self.bias + self.w1 * features.0 + self.w2 * features.1)
     }
 
     /// Calculates the accuracy of predictions made by a model based on input data and

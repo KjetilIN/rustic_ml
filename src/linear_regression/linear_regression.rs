@@ -1,14 +1,14 @@
 use rand::{distributions::Uniform, prelude::Distribution};
 
-use crate::cost::CostFunction;
+use crate::{cost::CostFunction, data_utils::matrix::Matrix};
 
 #[allow(dead_code)]
 pub struct LinearRegression {
-    /// Weights of the model
-    weights: Vec<f32>,
+    /// Weights of the model as a single line `Matrix`
+    weights: Matrix,
 
-    /// Intercept of the model
-    intercept: f32,
+    /// Bias of the model
+    bias: f32,
 
     /// Function for calculating the performance of the model
     cost_function: fn(&Vec<f32>, &Vec<f32>) -> f32,
@@ -25,10 +25,8 @@ impl LinearRegression {
         let uniform: Uniform<f32> = Uniform::new_inclusive(0.0, 1.0);
         let mut rng = rand::thread_rng();
         Self {
-            weights: (0..weights_count)
-                .map(|_| uniform.sample(&mut rng))
-                .collect(),
-            intercept: uniform.sample(&mut rng),
+            weights: Matrix::with_rand_bin(1, weights_count),
+            bias: uniform.sample(&mut rng),
             cost_function: CostFunction::mean_absolute_error,
             learning_rate: 1.0,
             log_output: false,
@@ -54,7 +52,8 @@ impl LinearRegression {
         unimplemented!()
     }
 
-    pub fn predict(&self, x_feature: f32) -> f32 {
+    pub fn predict(&self, features: Vec<f32>) -> f32 {
+        //self.weights * features + self.bias
         unimplemented!()
     }
 

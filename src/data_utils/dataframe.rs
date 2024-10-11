@@ -43,6 +43,7 @@ pub enum DataColumnEnum {
 #[allow(dead_code)]
 pub struct Dataframe {
     columns: Vec<DataColumnEnum>,
+    column_names: Vec<String>,
     rows_count: u32,
 }
 
@@ -204,10 +205,18 @@ impl Dataframe {
         let csv_lines: Vec<_> = contents.lines().collect();
 
         // Count how many columns there are
-        let column_count: usize = csv_lines[0].split(delimiter).count();
+        // Also make sure we escape the BOM character in the start of the file
+        let column_count: usize = csv_lines[0]
+            .trim_start_matches("\u{feff}")
+            .split(delimiter)
+            .count();
 
         // Column names for the dataset
-        let column_names: Vec<_> = csv_lines[0].split(delimiter).collect();
+        let column_names: Vec<String> = csv_lines[0]
+            .trim_start_matches("\u{feff}")
+            .split(delimiter)
+            .map(|f| f.to_owned())
+            .collect();
 
         // Get the data types for each column and initialize each column
         let columns_with_data: Vec<_> = csv_lines[1].split(delimiter).collect();
@@ -299,6 +308,7 @@ impl Dataframe {
         Ok(Dataframe {
             columns: dataframe_columns,
             rows_count: contents.lines().count() as u32,
+            column_names: column_names,
         })
     }
 
@@ -424,7 +434,7 @@ impl Dataframe {
 
         // Print separator
         for _ in &self.columns {
-            print!("{:-<15}", "_");
+            print!("{:-<15}", "-");
         }
         println!();
 
@@ -618,6 +628,10 @@ impl Dataframe {
                 }
             }
         }
+    }
+
+    pub fn count_records(&self) -> usize {
+        unimplemented!()
     }
 
     /// Calculate the total memory used for the `Dataframe`
@@ -959,7 +973,8 @@ impl Dataframe {
     ///
     /// Creates a clone of the column. Values within the vector might be None.
     /// Use the column name to identify the column that will be extracted.
-    pub fn float_feature(&self, column_name: &str) -> Option<Vec<Option<f32>>> {
+    /// If the column is `i32` it will turn the value into the expected `Vec<Option<f32>>`.
+    pub fn float_feature(&self, column_name: &str) -> Option<Vec<f32>> {
         // Return none if there is no vector with
         if !self.has_column(column_name) {
             return None;
@@ -971,6 +986,11 @@ impl Dataframe {
                 DataColumnEnum::FloatColumn(float_col) => {
                     if float_col.name == column_name {
                         return Some(float_col.extract());
+                    }
+                }
+                DataColumnEnum::IntColumn(int_col) => {
+                    if int_col.name == column_name {
+                        return Some(int_col.extract().into_iter().map(|f| f as f32).collect());
                     }
                 }
                 _ => continue,
@@ -996,13 +1016,13 @@ impl Dataframe {
         &self,
         first_column_name: &str,
         second_column_name: &str,
-    ) -> Option<Vec<Option<(f32, f32)>>> {
+    ) -> Option<Vec<(f32, f32)>> {
         if !self.has_column(first_column_name) || !self.has_column(second_column_name) {
             return None;
         }
 
-        let mut first_column: Option<Vec<Option<f32>>> = None;
-        let mut second_column: Option<Vec<Option<f32>>> = None;
+        let mut first_column: Option<Vec<f32>> = None;
+        let mut second_column: Option<Vec<f32>> = None;
 
         for column in &self.columns {
             match column {
@@ -1023,25 +1043,12 @@ impl Dataframe {
         }
 
         // Merge the two columns
-        let merged_column: Option<Vec<Option<(f32, f32)>>> = match (first_column, second_column) {
+        let merged_column: Option<Vec<(f32, f32)>> = match (first_column, second_column) {
             (Some(first_vec), Some(second_vec)) => {
                 // Ensure the lengths of both vectors are the same
                 if first_vec.len() == second_vec.len() {
                     // Combine the two vectors element-wise
-                    Some(
-                        first_vec
-                            .into_iter()
-                            .zip(second_vec.into_iter())
-                            .map(|(first_opt, second_opt)| {
-                                match (first_opt, second_opt) {
-                                    (Some(first_val), Some(second_val)) => {
-                                        Some((first_val, second_val))
-                                    }
-                                    _ => None, // If either is None, return None
-                                }
-                            })
-                            .collect(),
-                    )
+                    Some(first_vec.into_iter().zip(second_vec.into_iter()).collect())
                 } else {
                     None
                 }

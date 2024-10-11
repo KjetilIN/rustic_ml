@@ -34,7 +34,7 @@ pub trait DataColumnTrait {
     fn reset(&mut self);
 
     /// Extract method
-    fn extract(&self) -> Vec<Option<Self::Item>>;
+    fn extract(&self) -> Vec<Self::Item>;
 
     /// Reset to the default value of the given column
     fn reset_default(&mut self)
@@ -110,8 +110,11 @@ impl<T: 'static + Default + Clone> DataColumnTrait for DataColumn<T> {
         self.data.iter()
     }
 
-    fn extract(&self) -> Vec<Option<T>> {
-        let vec: Vec<_> = self.data.iter().cloned().collect();
-        return vec;
+    fn extract(&self) -> Vec<T> {
+        self.data
+            .clone()
+            .into_iter()
+            .map(|opt| opt.unwrap_or_default())
+            .collect()
     }
 }

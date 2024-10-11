@@ -1,4 +1,4 @@
-pub struct Activation{}
+pub struct Activation {}
 
 impl Activation {
     /// Heaviside step function is a activation function that returns either 0 or 1.
@@ -20,15 +20,14 @@ impl Activation {
         } else {
             0
         }
-    }    
+    }
 
-
-    pub fn sigmoid(value: f64) -> f64{
+    pub fn sigmoid(value: f64) -> f64 {
         1.0 / (1.0 + (-value).exp())
     }
 
-    pub fn sigmoid_derivative(value: f64) -> f64{
+    pub fn sigmoid_derivative(value: f64) -> f64 {
         let sigmoid = Self::sigmoid(value);
-        sigmoid*(1.0-sigmoid)
+        sigmoid * (1.0 - sigmoid)
     }
 }

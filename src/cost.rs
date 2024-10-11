@@ -47,7 +47,7 @@ impl CostFunction {
 
         // Loop over the predictions
         for (predict, target) in zip(predictions, targets) {
-            square_sum += (predict - target).powf(n);
+            square_sum += (predict - target).powf(2.0);
         }
 
         return square_sum / n;

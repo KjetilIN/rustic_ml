@@ -6,3 +6,4 @@
 pub mod datacolumn;
 pub mod dataframe;
 pub mod matrix;
+pub mod matrix_error;

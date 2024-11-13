@@ -2,6 +2,6 @@
 
 pub mod activation;
 pub mod data_utils;
-pub mod perceptron;
 pub mod layer;
 pub mod network;
+pub mod perceptron;

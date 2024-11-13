@@ -1,3 +1,20 @@
+#[derive(Debug)]
+pub enum Activation {
+    STEP,
+    SIGMOID,
+    RELU,
+}
+
+impl Activation {
+    pub fn get_activation(&self) -> fn(f64) -> usize {
+        match self {
+            Activation::STEP => h_step,
+            Activation::SIGMOID => todo!(),
+            Activation::RELU => todo!(),
+        }
+    }
+}
+
 /// Heaviside step function is a activation function that returns either 0 or 1.
 ///
 /// Read more about the step function here: <https://en.wikipedia.org/wiki/Heaviside_step_function>

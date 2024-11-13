@@ -27,6 +27,25 @@
 This library is built of first principles, and the goal is to avoid any dependencies. 
 
 
+A custom neural network can be created like this: 
+```rust
+// Create a new network 
+let mut nn = Network::init()
+         .add_layer(DenseLayer::new(3, 4))
+         .add_layer(ActivationLayer::with(SigmoidFn))
+         .add_layer(Softmax::new(4, 4));
+
+
+// Train the network
+nn.fit_log(&X_train, &t_train, 1000);
+
+
+// Use the network to predict new data:
+let prediction = nn.feed_forward(&X_instance);
+
+```
+
+
 > ⚠️ This library is in the prototype stage. Breaking changes can happen. 
 
 

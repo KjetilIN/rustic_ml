@@ -32,15 +32,15 @@ impl Layer for DenseLayer {
         self.weights.cols * self.weights.rows
     }
 
-    fn feed_forward(&self, input: &Matrix) -> Matrix {
-        match self.weights.multiply(input) {
-            Ok(mat) => return mat,
+    fn feed_forward<'a>(&self, input_mat: &'a mut Matrix) -> &'a mut Matrix {
+        match self.weights.multiply_into(input_mat) {
+            Ok(_) => return input_mat,
             Err(err) => {
                 println!(
                     "ERROR: {}: Weights: {}, Input: {}",
                     err,
                     self.weights.shape(),
-                    input.shape()
+                    input_mat.shape()
                 );
                 panic!()
             }

@@ -458,6 +458,60 @@ impl Matrix {
         Ok(result)
     }
 
+
+    /// Performs matrix multiplication with bias: (self * input) + bias
+    /// Returns a new Matrix containing the result
+    /// 
+    /// # Arguments
+    /// * `input` - The input matrix to multiply with
+    /// * `bias` - The bias matrix to add (must be a column vector)
+    /// 
+    /// # Returns
+    /// * `Result<Matrix, String>` - The result matrix or an error message
+    pub fn multiply_with_bias(&self, input: &mut Matrix, bias: &Matrix) -> Result<(), String> {
+        // Check dimensions for matrix multiplication
+        if self.cols != input.rows {
+            return Err(format!(
+                "Invalid dimensions for matrix multiplication. \
+                First matrix: {}x{}, Second matrix: {}x{}",
+                self.rows, self.cols, input.rows, input.cols
+            ));
+        }
+
+        // Check that input is a column vector
+        if input.cols != 1 {
+            return Err("Input matrix must be a column vector".to_string());
+        }
+
+        // Check bias dimensions
+        if bias.cols != 1 || bias.rows != self.rows {
+            return Err(format!(
+                "Bias must be a column vector with {} rows, got {}x{}",
+                self.rows, bias.rows, bias.cols
+            ));
+        }
+
+        let original_input = input.data.clone();
+
+        // Resize input matrix to match output dimensions
+        input.data.clear();
+        input.data.resize(self.rows, 0.0);
+        input.rows = self.rows;
+        input.cols = 1;
+
+        // Perform matrix multiplication
+        for i in 0..self.rows {
+            let mut sum = 0.0;
+            for k in 0..self.cols {
+                sum += self.data[i * self.cols + k] * original_input[k];
+            }
+            // Add bias directly during multiplication
+            input.data[i] = sum + bias.data[i];
+        }
+
+        Ok(())
+    }
+
     /// Not implemented
     pub fn transpose(&mut self) {
         unimplemented!()

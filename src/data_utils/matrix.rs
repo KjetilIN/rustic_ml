@@ -2,7 +2,7 @@ use rand::{
     distributions::{Standard, Uniform},
     Rng,
 };
-use std::ops::{Range, RangeInclusive};
+use std::ops::{Range, RangeInclusive, Sub};
 
 use super::matrix_error::MatrixError;
 
@@ -430,6 +430,34 @@ impl Matrix {
         Ok(())
     }
 
+    // Multiply weight matrix with input matrix and return the result
+    pub fn multiply_input(&self, input: &Matrix) -> Result<Matrix, MatrixError> {
+        // Ensure that the number of columns in the weight matrix matches the number of rows in the input matrix
+        if self.cols != input.rows {
+            return Err(MatrixError::MatrixMultiply);
+        }
+
+        // Initialize a result matrix with appropriate dimensions: rows of the weight matrix, cols of the input matrix
+        let mut result = Matrix {
+            data: vec![0.0; self.rows * input.cols],
+            rows: self.rows,
+            cols: input.cols,
+        };
+
+        // Perform matrix multiplication
+        for i in 0..self.rows {
+            for j in 0..input.cols {
+                let mut sum = 0.0;
+                for k in 0..self.cols {  // self.cols == input.rows
+                    sum += self.data[i * self.cols + k] * input.data[k * input.cols + j];
+                }
+                result.data[i * input.cols + j] = sum;
+            }
+        }
+
+        Ok(result)
+    }
+
     /// Not implemented
     pub fn transpose(&mut self) {
         unimplemented!()
@@ -598,5 +626,36 @@ impl Matrix {
 
     pub fn det_3x3() {
         unimplemented!()
+    }
+}
+
+
+// Implement the Sub trait for Matrix to enable matrix subtraction
+impl Sub for Matrix {
+    type Output = Matrix;
+
+    fn sub(self, other: Matrix) -> Matrix {
+        // Ensure both matrices have the same shape
+        if self.rows != other.rows || self.cols != other.cols {
+            panic!(
+                "Matrix dimension mismatch: self is {}x{}, other is {}x{}",
+                self.rows, self.cols, other.rows, other.cols
+            );
+        }
+
+        // Create a new matrix to store the result of subtraction
+        let mut result_data = Vec::with_capacity(self.data.len());
+
+        // Perform element-wise subtraction
+        for (a, b) in self.data.iter().zip(other.data.iter()) {
+            result_data.push(a - b);
+        }
+
+        // Return a new Matrix with the same dimensions and the result data
+        Matrix {
+            data: result_data,
+            rows: self.rows,
+            cols: self.cols,
+        }
     }
 }

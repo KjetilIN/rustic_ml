@@ -41,17 +41,28 @@ impl Layer for DenseLayer {
     }
 
     fn feed_forward<'a>(&mut self, input_mat: &'a mut Matrix) -> &'a mut Matrix {
-        self.input = Some(input_mat.clone()); // Store the input for backward pass
-        match self.weights.multiply_into(input_mat) {
+        // Ensure input matrix is a column vector of size in_size x 1
+        // Ensure input matrix has the correct shape for matrix multiplication with weights
+        if input_mat.rows != self.weights.cols {
+            panic!(
+                "Input dimensions don't match weight matrix dimensions! Expected input columns: {}, but got: {}. Shape weights: {}, shape input: {}",
+                self.weights.rows, input_mat.cols, self.weights.shape(), input_mat.shape()
+            );
+        }
+
+        // Store the input for backward pass
+        self.input = Some(input_mat.clone()); 
+
+        // Multiply the output
+        match self.weights.multiply_input(&input_mat) {
             Ok(_) => return input_mat,
             Err(err) => {
-                println!(
+                panic!(
                     "ERROR: {}: Weights: {}, Input: {}",
                     err,
                     self.weights.shape(),
                     input_mat.shape()
                 );
-                panic!()
             }
         }
     }
@@ -81,5 +92,5 @@ impl Layer for DenseLayer {
     }
 
 
-    
+
 }

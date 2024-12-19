@@ -437,7 +437,23 @@ impl Matrix {
 
     /// Not implemented
     pub fn get_transposed(&self) -> Matrix {
-        unimplemented!()
+        // Create a new data vector with swapped dimensions
+        let mut transposed_data = vec![0.0; self.rows * self.cols];
+
+        // Iterate over the elements and rearrange them
+        for row in 0..self.rows {
+            for col in 0..self.cols {
+                // Transpose formula: new index = col * new_cols + row
+                transposed_data[col * self.rows + row] = self.data[row * self.cols + col];
+            }
+        }
+
+        // Return the new transposed matrix
+        Matrix {
+            data: transposed_data,
+            rows: self.cols,
+            cols: self.rows,
+        }
     }
 
     /// Not implemented
@@ -516,6 +532,59 @@ impl Matrix {
     pub fn apply_activation(&mut self, activation: fn(f32) -> f32){
         for item in self.data.iter_mut() {
             *item = activation(*item);
+        }
+    }
+
+    pub fn sum_rows(&self) -> Matrix {
+        // Create a vector to store the row sums
+        let mut row_sums = vec![0.0; self.rows];
+
+        // Iterate over each row
+        for row in 0..self.rows {
+            // Sum elements in the row
+            let mut sum = 0.0;
+            for col in 0..self.cols {
+                sum += self.data[row * self.cols + col];
+            }
+            row_sums[row] = sum;
+        }
+
+        // Return a column vector (1 column, rows rows)
+        Matrix {
+            data: row_sums,
+            rows: self.rows,
+            cols: 1,
+        }
+    }
+
+    pub fn subtract_assign(&mut self, other: &Matrix) {
+        // Ensure both matrices have the same shape
+        if self.rows != other.rows || self.cols != other.cols {
+            panic!(
+                "Matrix dimension mismatch: self is {}x{}, other is {}x{}",
+                self.rows, self.cols, other.rows, other.cols
+            );
+        }
+
+        // Perform in-place subtraction
+        for i in 0..self.data.len() {
+            self.data[i] -= other.data[i];
+        }
+    }
+
+
+    pub fn apply_gradient(&mut self, gradient: &Matrix, learning_rate: f32) {
+        // Ensure both matrices have the same shape
+        if self.rows != gradient.rows || self.cols != gradient.cols {
+            panic!(
+                "Matrix dimension mismatch: self is {}x{}, other is {}x{}",
+                self.rows, self.cols, gradient.rows, gradient.cols
+            );
+        }
+
+        // Perform in-place subtraction
+        for i in 0..self.data.len() {
+            self.data[i] -= gradient.data[i] * learning_rate;
         }
     }
 

@@ -11,6 +11,12 @@ pub struct DenseLayer {
 
     // Bias of the matrix
     bias: Matrix,
+
+    // Learning rate 
+    learning_rate: f32,
+
+    // Input matrix 
+    input: Option<Matrix>
 }
 
 impl DenseLayer {
@@ -23,6 +29,8 @@ impl DenseLayer {
         Self {
             weights: Matrix::with_rand_bin(output_dim, input_dim),
             bias: empty_mat,
+            input: None,
+            learning_rate: 0.1,
         }
     }
 }
@@ -32,7 +40,8 @@ impl Layer for DenseLayer {
         self.weights.cols * self.weights.rows
     }
 
-    fn feed_forward<'a>(&self, input_mat: &'a mut Matrix) -> &'a mut Matrix {
+    fn feed_forward<'a>(&mut self, input_mat: &'a mut Matrix) -> &'a mut Matrix {
+        self.input = Some(input_mat.clone()); // Store the input for backward pass
         match self.weights.multiply_into(input_mat) {
             Ok(_) => return input_mat,
             Err(err) => {
@@ -47,7 +56,30 @@ impl Layer for DenseLayer {
         }
     }
 
-    fn backward(&mut self, _gradient: &Matrix) -> &Matrix {
-        todo!()
+    fn backward(&mut self, gradient: Matrix) -> Matrix {
+        assert!(self.input.is_some(),"Backprop error: expected the input to be set");
+
+        // Compute weight gradient: input^T * gradient
+        let mut weight_gradient = self.input.clone().unwrap().get_transposed().multiply(&gradient).expect("Backprop error: could not multiply gradient");
+
+        // Compute bias gradient: sum of gradient along rows
+        let mut bias_gradient = gradient.sum_rows(); 
+
+        // Propagate gradient backward: gradient * weights^T
+        let propagated_gradient = gradient.multiply(&self.weights.get_transposed()).unwrap();
+
+        // Update weights and biases (optional, if you're not separating this logic)
+        &weight_gradient.scale_f(self.learning_rate); 
+        &bias_gradient.scale_f(self.learning_rate);
+
+        
+        self.weights.apply_gradient(&weight_gradient, self.learning_rate);
+        self.bias.apply_gradient(&bias_gradient, self.learning_rate);
+
+        // Return the propagated gradient
+        propagated_gradient
     }
+
+
+    
 }

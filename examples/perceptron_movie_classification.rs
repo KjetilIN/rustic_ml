@@ -25,7 +25,7 @@ fn main() {
     let mut perceptron = Perceptron::init().learning_rate(1.0).bias(-1.0);
 
     // Setting up training data
-    let x_train: Vec<(f64, f64)> = vec![(1.0, 1.0), (4.0, 3.0), (3.0, 5.0), (5.0, 6.0), (2.0, 3.0)];
+    let x_train: Vec<(f32, f32)> = vec![(1.0, 1.0), (4.0, 3.0), (3.0, 5.0), (5.0, 6.0), (2.0, 3.0)];
     let y_train = vec![0.0, 1.0, 1.0, 1.0, 0.0];
 
     // Training until it learns the system.

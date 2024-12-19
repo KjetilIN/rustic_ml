@@ -13,10 +13,10 @@ use crate::activation::h_step;
 /// - `w1` and `w2`: represent weights in the network. A perceptron has two weights
 #[allow(dead_code)]
 pub struct Perceptron {
-    learning_rate: f64,
-    bias: f64,
-    w1: f64,
-    w2: f64,
+    learning_rate: f32,
+    bias: f32,
+    w1: f32,
+    w2: f32,
 }
 
 impl Perceptron {
@@ -27,7 +27,7 @@ impl Perceptron {
     /// A `Perceptron` struct is being returned with randomly initialized bias and weights.
     /// Learning rate is by default 1. Use `with_learning_rate` to create a new perceptron with given learning rate.
     pub fn init() -> Self {
-        let uniform: Uniform<f64> = Uniform::new_inclusive(0.0, 1.0);
+        let uniform: Uniform<f32> = Uniform::new_inclusive(0.0, 1.0);
         let mut rng = rand::thread_rng();
         Perceptron {
             learning_rate: 1.0,
@@ -42,14 +42,14 @@ impl Perceptron {
     ///
     /// Arguments:
     ///
-    /// - `uniform`: The `with_uniform` function takes a reference to a `Uniform<f64>` object as a
+    /// - `uniform`: The `with_uniform` function takes a reference to a `Uniform<f32>` object as a
     /// parameter. This object is used to generate random samples from a uniform distribution.
     ///
     /// Returns:
     ///
     /// A new instance of the `Perceptron` struct is being returned, with the `bias`, `w1`, and `w3`
-    /// fields initialized with random samples from the provided `Uniform<f64>` distribution.
-    pub fn with_uniform(uniform: &Uniform<f64>) -> Self {
+    /// fields initialized with random samples from the provided `Uniform<f32>` distribution.
+    pub fn with_uniform(uniform: &Uniform<f32>) -> Self {
         let mut rng = rand::thread_rng();
         Perceptron {
             learning_rate: 1.0,
@@ -72,7 +72,7 @@ impl Perceptron {
     /// Returns:
     ///
     /// Returns the modified Perceptron with given learning rate
-    pub fn learning_rate(mut self, learning_rate: f64) -> Self {
+    pub fn learning_rate(mut self, learning_rate: f32) -> Self {
         self.learning_rate = learning_rate;
         self
     }
@@ -81,13 +81,13 @@ impl Perceptron {
     ///
     /// Arguments:
     ///
-    /// - `bias`: The `bias` parameter in the `bias` function is a floating-point number (`f64`) that
+    /// - `bias`: The `bias` parameter in the `bias` function is a floating-point number (`f32`) that
     /// represents the bias value to be set for the object.
     ///
     /// Returns:
     ///
     /// Returns the modified Perceptron with given bias
-    pub fn bias(mut self, bias: f64) -> Self {
+    pub fn bias(mut self, bias: f32) -> Self {
         self.bias = bias;
         self
     }
@@ -97,7 +97,7 @@ impl Perceptron {
     /// Arguments:
     ///
     /// - `x_train`: The `x_train` parameter is a reference to a vector of tuples, where each tuple
-    /// contains two `f64` values. These tuples represent the input features for the training data.
+    /// contains two `f32` values. These tuples represent the input features for the training data.
     /// - `y_train`: The `y_train` parameter in the `fit` function represents the target values
     /// corresponding to the input data points in `x_train`. These target values are used to train the
     /// model by comparing them with the predictions made by the model during each epoch of training.
@@ -105,13 +105,13 @@ impl Perceptron {
     /// model will iterate over the entire dataset during the training process. Each epoch consists of
     /// one pass through the entire dataset. Increasing the number of epochs can potentially improve the
     /// model's performance by allowing it to learn from the data
-    pub fn fit(&mut self, x_train: &Vec<(f64, f64)>, y_train: &Vec<f64>, epochs: usize) {
+    pub fn fit(&mut self, x_train: &Vec<(f32, f32)>, y_train: &Vec<f32>, epochs: usize) {
         // For each epoch
         for _ in 0..epochs {
             // Iterate over the dataset and recalculate the
             for (x, y) in x_train.iter().zip(y_train.iter()) {
                 let target = *y;
-                let guess = self.predict(x) as f64;
+                let guess = self.predict(x) as f32;
 
                 // Check if we need to update the weights
                 if target != guess {
@@ -132,7 +132,7 @@ impl Perceptron {
     /// Arguments:
     ///
     /// - `x_train`: The `x_train` parameter is a reference to a vector of tuples, where each tuple
-    /// contains two `f64` values. These tuples represent the input data points for training the model.
+    /// contains two `f32` values. These tuples represent the input data points for training the model.
     /// - `y_train`: The `y_train` parameter in the `fit_with_logging` function represents the target
     /// values corresponding to the input data points in `x_train`. These target values are used to
     /// train the model by comparing them with the predictions made by the model during each epoch.
@@ -140,8 +140,8 @@ impl Perceptron {
     /// times the model will iterate over the entire dataset during the training process.
     pub fn fit_with_logging(
         &mut self,
-        x_train: &Vec<(f64, f64)>,
-        y_train: &Vec<f64>,
+        x_train: &Vec<(f32, f32)>,
+        y_train: &Vec<f32>,
         epochs: usize,
     ) {
         // For each epoch
@@ -150,7 +150,7 @@ impl Perceptron {
             let mut correct_predictions = 0;
             for (x, y) in x_train.iter().zip(y_train.iter()) {
                 let target = *y;
-                let guess = self.predict(x) as f64;
+                let guess = self.predict(x) as f32;
 
                 // Check if we need to update the weights
                 if target != guess {
@@ -167,7 +167,7 @@ impl Perceptron {
 
             // Calculate the percentage
             let accuracy = if x_train.len() > 0 {
-                (correct_predictions as f64 / x_train.len() as f64) * 100.0
+                (correct_predictions as f32 / x_train.len() as f32) * 100.0
             } else {
                 0.0
             };
@@ -189,7 +189,7 @@ impl Perceptron {
     /// values corresponding to the input data points in `x_train`. These target values are used to
     /// train the model by comparing them with the predictions made by the model during each iteration
     /// of the training process.
-    pub fn fit_until_halt(&mut self, x_train: &Vec<(f64, f64)>, y_train: &Vec<f64>) {
+    pub fn fit_until_halt(&mut self, x_train: &Vec<(f32, f32)>, y_train: &Vec<f32>) {
         // Loop forever
         loop {
             // Variable for if the weights have been updated
@@ -198,7 +198,7 @@ impl Perceptron {
             // Iterate over the dataset and recalculate the
             for (x, y) in x_train.iter().zip(y_train.iter()) {
                 let target = *y;
-                let guess = self.predict(x) as f64;
+                let guess = self.predict(x) as f32;
 
                 // Check if we need to update the weights
                 if target != guess {
@@ -224,13 +224,13 @@ impl Perceptron {
     /// Arguments:
     ///
     /// - `x_train`: The `x_train` parameter in the provided function `fit_until_halt_with_logging` is a
-    /// reference to a vector of tuples. Each tuple contains two elements of type `f64`. These tuples
+    /// reference to a vector of tuples. Each tuple contains two elements of type `f32`. These tuples
     /// represent the input features for training the model.
     /// - `y_train`: The `y_train` parameter in the provided function `fit_until_halt_with_logging`
     /// represents the target values corresponding to the input data points in `x_train`. These target
     /// values are used to train the model by comparing them with the predictions made by the model
     /// during each iteration.
-    pub fn fit_until_halt_with_logging(&mut self, x_train: &Vec<(f64, f64)>, y_train: &Vec<f64>) {
+    pub fn fit_until_halt_with_logging(&mut self, x_train: &Vec<(f32, f32)>, y_train: &Vec<f32>) {
         // Forever loop
         let mut epochs_count = 0;
         loop {
@@ -242,7 +242,7 @@ impl Perceptron {
             let mut has_updated = false;
             for (x, y) in x_train.iter().zip(y_train.iter()) {
                 let target = *y;
-                let guess = self.predict(x) as f64;
+                let guess = self.predict(x) as f32;
 
                 // Check if we need to update the weights
                 if target != guess {
@@ -261,7 +261,7 @@ impl Perceptron {
 
             // Calculate the percentage
             let accuracy = if x_train.len() > 0 {
-                (correct_predictions as f64 / x_train.len() as f64) * 100.0
+                (correct_predictions as f32 / x_train.len() as f32) * 100.0
             } else {
                 0.0
             };
@@ -286,7 +286,7 @@ impl Perceptron {
     /// Returns:
     ///
     /// Either 0 or 1, representing a prediction of a class.
-    pub fn predict(&self, features: &(f64, f64)) -> usize {
+    pub fn predict(&self, features: &(f32, f32)) -> f32 {
         // Return the output of the prediction
         // Using the Heaviside step function to get the value as 0 or 1
         h_step(self.bias + self.w1 * features.0 + self.w2 * features.1)
@@ -304,19 +304,19 @@ impl Perceptron {
     ///
     /// Returns:
     ///
-    /// The accuracy as percentage as a f64
-    pub fn calculate_accuracy(&self, x_data: &Vec<(f64, f64)>, t_data: &Vec<f64>) -> f64 {
+    /// The accuracy as percentage as a f32
+    pub fn calculate_accuracy(&self, x_data: &Vec<(f32, f32)>, t_data: &Vec<f32>) -> f32 {
         let mut correct_predictions = 0;
         for (i, features) in x_data.iter().enumerate() {
             let prediction = self.predict(features);
-            if prediction == (t_data[i] as usize) {
+            if prediction == ((t_data[i] as usize)) as f32 {
                 correct_predictions += 1;
             }
         }
 
         // Calculate the percentage
         let accuracy = if x_data.len() > 0 {
-            (correct_predictions as f64 / x_data.len() as f64) * 100.0
+            (correct_predictions as f32 / x_data.len() as f32) * 100.0
         } else {
             0.0 // Avoid division by zero
         };

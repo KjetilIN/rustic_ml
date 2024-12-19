@@ -7,10 +7,10 @@ fn main() {
 
     // OR training data set
     // This training dataset includes all possible versions of the OR
-    let x_train: Vec<(f64, f64)> = vec![(0.0, 0.0), (0.0, 1.0), (1.0, 0.0), (1.0, 1.0)];
+    let x_train: Vec<(f32, f32)> = vec![(0.0, 0.0), (0.0, 1.0), (1.0, 0.0), (1.0, 1.0)];
 
     // Corresponding labels (binary classification: 0 or 1)
-    let y_train = vec![0.0, 1.0, 1.0, 1.0];
+    let y_train: Vec<f32> = vec![0.0, 1.0, 1.0, 1.0];
 
     // Train the perceptron using the fit method
     // Alternatively use the fit() method to not log the accuracy over time

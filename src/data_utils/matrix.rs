@@ -11,7 +11,7 @@ use super::matrix_error::MatrixError;
 /// A mathematical data structure.
 /// Read more about matrices here:
 /// <https://en.wikipedia.org/wiki/Matrix_(mathematics)>
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Matrix {
     pub data: Vec<f32>,
     pub rows: usize,
@@ -402,6 +402,34 @@ impl Matrix {
         Ok(matrix)
     }
 
+    /// Multiply two matrices into the given matrix 
+    ///
+    /// Condition for multiplication of matrices:
+    /// - Given matrix `(mxn)` and `(qxp)`
+    /// - Columns `n` must equal rows `q`
+    /// Will do the multiplication and mutate the given matrix
+    ///
+    /// Returns `Result` based on if this condition is met
+    pub fn multiply_into<'a>(&self, mat: &'a mut Matrix) -> Result<(), MatrixError> {
+        // Check the matrix condition
+        if self.cols != mat.rows {
+            return Err(MatrixError::MatrixMultiply);
+        }
+
+        // Perform matrix multiplication
+        for i in 0..self.rows {
+            for j in 0..mat.cols {
+                let mut sum = 0.0;
+                for k in 0..self.cols {
+                    sum += self.data[i * self.cols + k] * mat.data[k * mat.cols + j];
+                }
+                mat.data[i * mat.cols + j] = sum;
+            }
+        }
+
+        Ok(())
+    }
+
     /// Not implemented
     pub fn transpose(&mut self) {
         unimplemented!()
@@ -479,6 +507,15 @@ impl Matrix {
     pub fn mod_f(&mut self, numb: f32) {
         for item in self.data.iter_mut() {
             *item %= numb;
+        }
+    }
+
+    /// Apply activation function to each element in the matrix
+    /// 
+    /// Mutates the matrix and return the new matrix with activation function applied 
+    pub fn apply_activation(&mut self, activation: fn(f32) -> f32){
+        for item in self.data.iter_mut() {
+            *item = activation(*item);
         }
     }
 
